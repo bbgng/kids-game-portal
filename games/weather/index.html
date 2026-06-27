@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>おてんきあそび</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', sans-serif;
+      background: #87CEEB;
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+
+    /* ====== SCENE ====== */
+    #scene {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 110px);
+      overflow: hidden;
+    }
+
+    /* Sky */
+    #sky {
+      position: absolute;
+      inset: 0;
+      bottom: 28%;
+      transition: background 1.2s ease;
+      background: linear-gradient(180deg, #5BB8F5 0%, #A8DAFF 100%);
+    }
+    #sky.cloudy  { background: linear-gradient(180deg, #8BAABB 0%, #B8C8D8 100%); }
+    #sky.rainy   { background: linear-gradient(180deg, #5C7A8A 0%, #8AAABB 100%); }
+    #sky.snowy   { background: linear-gradient(180deg, #9BAABB 0%, #C8D8E8 100%); }
+    #sky.stormy  { background: linear-gradient(180deg, #2A3A4A 0%, #4A5A6A 100%); }
+
+    /* Ground */
+    #ground {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30%;
+      background: linear-gradient(180deg, #5DBB63 0%, #3A9940 100%);
+      border-radius: 60% 60% 0 0 / 20% 20% 0 0;
+      transition: background 1s;
+    }
+    #ground.rainy  { background: linear-gradient(180deg, #4A9950 0%, #2A7A30 100%); }
+    #ground.snowy  { background: linear-gradient(180deg, #DDEEFF 0%, #C8DDFF 100%); }
+    #ground.stormy { background: linear-gradient(180deg, #3A6040 0%, #1A4020 100%); }
+
+    /* ====== SKY OBJECTS ====== */
+    #sky-objects {
+      position: absolute;
+      inset: 0;
+      bottom: 28%;
+      pointer-events: none;
+    }
+
+    /* Sun */
+    .sun {
+      position: absolute;
+      top: 14%;
+      right: 12%;
+      width: 80px;
+      height: 80px;
+      transition: opacity 0.8s, transform 0.8s;
+    }
+    .sun.hidden { opacity: 0; transform: scale(0.5); }
+    .sun-body {
+      position: absolute;
+      inset: 12px;
+      background: #FFD700;
+      border-radius: 50%;
+      box-shadow: 0 0 20px #FFD700aa;
+    }
+    .sun-ray {
+      position: absolute;
+      width: 8px;
+      height: 20px;
+      background: #FFD700;
+      border-radius: 4px;
+      left: 50%;
+      transform-origin: bottom center;
+      margin-left: -4px;
+    }
+    @keyframes sunSpin { to { transform: rotate(360deg); } }
+    .sun-rays {
+      position: absolute;
+      inset: 0;
+      animation: sunSpin 12s linear infinite;
+    }
+
+    /* Moon/star for stormy */
+    .moon {
+      position: absolute;
+      top: 12%;
+      right: 14%;
+      font-size: 48px;
+      opacity: 0;
+      transition: opacity 0.8s;
+    }
+    .moon.show { opacity: 1; }
+
+    /* Clouds */
+    .cloud {
+      position: absolute;
+      transition: opacity 0.6s, transform 1s;
+    }
+    .cloud-body {
+      background: white;
+      border-radius: 50px;
+      position: relative;
+    }
+    .cloud-body::before, .cloud-body::after {
+      content: '';
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+    }
+    .cloud1 { top: 18%; left: 8%; }
+    .cloud2 { top: 30%; left: 55%; }
+    .cloud3 { top: 10%; left: 38%; }
+    .cloud-body.sm { width: 90px; height: 28px; }
+    .cloud-body.sm::before { width: 40px; height: 40px; top: -18px; left: 12px; }
+    .cloud-body.sm::after  { width: 28px; height: 28px; top: -12px; left: 42px; }
+    .cloud-body.md { width: 130px; height: 36px; }
+    .cloud-body.md::before { width: 55px; height: 55px; top: -24px; left: 16px; }
+    .cloud-body.md::after  { width: 40px; height: 40px; top: -18px; left: 62px; }
+    .cloud-body.lg { width: 160px; height: 44px; }
+    .cloud-body.lg::before { width: 68px; height: 68px; top: -30px; left: 20px; }
+    .cloud-body.lg::after  { width: 50px; height: 50px; top: -22px; left: 80px; }
+
+    .cloud-body.dark { background: #889; }
+    .cloud-body.dark::before, .cloud-body.dark::after { background: #889; }
+    .cloud-body.storm { background: #556; }
+    .cloud-body.storm::before, .cloud-body.storm::after { background: #556; }
+
+    @keyframes cloudFloat { 0%,100%{transform:translateX(0)} 50%{transform:translateX(14px)} }
+    .cloud1 { animation: cloudFloat 9s ease-in-out infinite; }
+    .cloud2 { animation: cloudFloat 11s ease-in-out infinite 2s; }
+    .cloud3 { animation: cloudFloat 7s ease-in-out infinite 4s; }
+
+    /* Raindrops */
+    .rain-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .rain-container.show { opacity: 1; }
+    .raindrop {
+      position: absolute;
+      width: 3px;
+      background: linear-gradient(180deg, transparent, #88BBFF);
+      border-radius: 2px;
+      animation: fall linear infinite;
+    }
+    @keyframes fall {
+      from { transform: translateY(-40px); opacity: 1; }
+      to   { transform: translateY(110vh); opacity: 0.6; }
+    }
+
+    /* Snowflakes */
+    .snow-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .snow-container.show { opacity: 1; }
+    .snowflake {
+      position: absolute;
+      color: white;
+      font-size: 18px;
+      animation: snowfall linear infinite;
+    }
+    @keyframes snowfall {
+      from { transform: translateY(-30px) rotate(0deg); opacity: 1; }
+      to   { transform: translateY(110vh) rotate(360deg); opacity: 0.5; }
+    }
+
+    /* Lightning */
+    .lightning {
+      position: absolute;
+      top: 5%;
+      left: 50%;
+      font-size: 70px;
+      opacity: 0;
+      transform: translateX(-50%);
+      pointer-events: none;
+      transition: opacity 0.1s;
+      filter: drop-shadow(0 0 20px yellow);
+    }
+    .lightning.flash { opacity: 1; }
+
+    /* ====== GROUND OBJECTS ====== */
+    #ground-objects {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 30%;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    /* Flowers */
+    .flower {
+      position: absolute;
+      bottom: 44%;
+      transition: opacity 0.5s;
+    }
+    .flower.hidden { opacity: 0; }
+    .flower-stem {
+      width: 4px;
+      background: #2D8A2D;
+      margin: 0 auto;
+      border-radius: 2px;
+    }
+    .flower-head { text-align: center; line-height: 1; }
+    .flower1 { left: 8%; }
+    .flower2 { left: 22%; }
+    .flower3 { left: 78%; }
+    @keyframes sway { 0%,100%{transform:rotate(-8deg)} 50%{transform:rotate(8deg)} }
+    .flower { animation: sway 3s ease-in-out infinite; transform-origin: bottom center; }
+    .flower1 { animation-delay: 0s; }
+    .flower2 { animation-delay: 1s; }
+    .flower3 { animation-delay: 0.5s; }
+
+    /* Mushroom (hiding spot) */
+    .mushroom {
+      position: absolute;
+      bottom: 40%;
+      left: 48%;
+      font-size: 44px;
+      transition: opacity 0.5s;
+      opacity: 0;
+    }
+    .mushroom.show { opacity: 1; }
+
+    /* ====== CREATURES ====== */
+    /* Butterfly */
+    .butterfly {
+      position: absolute;
+      font-size: 36px;
+      transition: opacity 0.5s, transform 0.5s;
+    }
+    .butterfly.hidden { opacity: 0; transform: scale(0); }
+    @keyframes butterflyFly {
+      0%   { transform: translate(0,0) rotate(-5deg); }
+      25%  { transform: translate(40px,-30px) rotate(5deg); }
+      50%  { transform: translate(80px,-10px) rotate(-5deg); }
+      75%  { transform: translate(40px,-40px) rotate(5deg); }
+      100% { transform: translate(0,0) rotate(-5deg); }
+    }
+    .butterfly { animation: butterflyFly 6s ease-in-out infinite; }
+    .bf1 { top: 35%; left: 15%; animation-delay: 0s; }
+    .bf2 { top: 50%; left: 60%; animation-delay: 2s; font-size: 28px; }
+
+    /* Ladybug */
+    .ladybug {
+      position: absolute;
+      font-size: 32px;
+      bottom: 42%;
+      transition: opacity 0.5s;
+    }
+    .ladybug.hidden { opacity: 0; }
+    @keyframes walk { 0%,100%{transform:translateX(0)} 50%{transform:translateX(30px)} }
+    .lb1 { left: 35%; animation: walk 4s ease-in-out infinite; }
+
+    /* Snail */
+    .snail {
+      position: absolute;
+      font-size: 38px;
+      bottom: 41%;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .snail.show { opacity: 1; }
+    @keyframes snailMove { 0%{transform:translateX(-20px)} 100%{transform:translateX(60px)} }
+    .snail { animation: snailMove 8s ease-in-out infinite alternate; }
+    .sn1 { left: 12%; }
+
+    /* Frog */
+    .frog {
+      position: absolute;
+      font-size: 42px;
+      bottom: 40%;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .frog.show { opacity: 1; }
+    @keyframes hop {
+      0%,100%{transform:translateY(0) scaleY(1)}
+      30%{transform:translateY(-28px) scaleY(1.1)}
+      60%{transform:translateY(-28px) scaleY(1.1)}
+      80%{transform:translateY(0) scaleY(0.85)}
+    }
+    .fr1 { right: 22%; animation: hop 3s ease-in-out infinite 0.5s; }
+    .fr2 { right: 38%; animation: hop 3.5s ease-in-out infinite 1.5s; font-size: 32px; }
+
+    /* Rabbit */
+    .rabbit {
+      position: absolute;
+      font-size: 42px;
+      bottom: 40%;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .rabbit.show { opacity: 1; }
+    @keyframes rabbitHop {
+      0%,100%{transform:translateY(0)}
+      40%{transform:translateY(-24px)}
+      55%{transform:translateY(-24px)}
+    }
+    .rb1 { left: 20%; animation: rabbitHop 2.2s ease-in-out infinite; }
+    .rb2 { right: 18%; animation: rabbitHop 2.8s ease-in-out infinite 0.8s; font-size: 34px; }
+
+    /* Bee */
+    .bee {
+      position: absolute;
+      font-size: 34px;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .bee.show { opacity: 1; }
+    @keyframes beeFly {
+      0%   { transform: translate(0,0); }
+      20%  { transform: translate(25px,-20px); }
+      40%  { transform: translate(50px,-5px); }
+      60%  { transform: translate(30px,-30px); }
+      80%  { transform: translate(10px,-15px); }
+      100% { transform: translate(0,0); }
+    }
+    .bee1 { top: 38%; left: 40%; animation: beeFly 5s ease-in-out infinite; }
+
+    /* Hiding bugs (stormy) */
+    .hide-bugs {
+      position: absolute;
+      bottom: 38%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 22px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      white-space: nowrap;
+    }
+    .hide-bugs.show { opacity: 1; }
+
+    /* Snow ground sparkle */
+    .snow-ground {
+      position: absolute;
+      inset: 0;
+      font-size: 24px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      display: flex;
+      align-items: flex-start;
+      padding-top: 8px;
+      justify-content: space-around;
+    }
+    .snow-ground.show { opacity: 1; }
+
+    /* Puddles (rain) */
+    .puddle {
+      position: absolute;
+      bottom: 38%;
+      background: rgba(100,160,220,0.4);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .puddle.show { opacity: 1; }
+    @keyframes ripple { 0%{transform:scale(1)} 50%{transform:scale(1.15)} 100%{transform:scale(1)} }
+    .puddle { animation: ripple 2s ease-in-out infinite; }
+    .p1 { left: 30%; width: 60px; height: 18px; }
+    .p2 { right: 25%; width: 44px; height: 14px; animation-delay: 0.8s; }
+
+    /* ====== WEATHER BUTTONS ====== */
+    #controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 110px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      padding: 0 12px;
+      border-top: 2px solid rgba(255,255,255,0.6);
+      z-index: 10;
+    }
+    .wx-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 10px 14px;
+      border-radius: 20px;
+      border: 3px solid transparent;
+      background: rgba(255,255,255,0.6);
+      cursor: pointer;
+      transition: transform 0.15s, border-color 0.3s, background 0.3s;
+      -webkit-tap-highlight-color: transparent;
+      min-width: 60px;
+    }
+    .wx-btn:active { transform: scale(0.9); }
+    .wx-btn.active { border-color: #FF9900; background: rgba(255,200,50,0.25); transform: scale(1.1); }
+    .wx-btn .icon { font-size: 36px; line-height: 1; }
+    .wx-btn .label { font-size: 12px; font-weight: bold; color: #444; }
+
+    /* Back button */
+    #back-btn {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 20;
+      background: rgba(255,255,255,0.7);
+      border: none;
+      border-radius: 50%;
+      width: 44px;
+      height: 44px;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Weather label */
+    #wx-label {
+      position: fixed;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.75);
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      pointer-events: none;
+      transition: opacity 0.4s;
+      z-index: 20;
+    }
+
+    @keyframes popIn { from{transform:scale(0) translateX(-50%)} to{transform:scale(1) translateX(-50%)} }
+    #wx-label { animation: popIn 0.3s ease-out; }
+
+    /* celebration stars */
+    .star-pop {
+      position: fixed;
+      font-size: 32px;
+      pointer-events: none;
+      z-index: 100;
+      animation: starFly 1s ease-out forwards;
+    }
+    @keyframes starFly {
+      from { opacity: 1; transform: translate(0,0) scale(1); }
+      to   { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3); }
+    }
+  </style>
+</head>
+<body>
+
+<button id="back-btn" onclick="location.href='../../index.html'">←</button>
+<div id="wx-label">☀️ はれ</div>
+
+<div id="scene">
+  <!-- Sky -->
+  <div id="sky"></div>
+
+  <!-- Clouds -->
+  <div id="sky-objects">
+    <div class="cloud cloud1"><div id="cloud1-body" class="cloud-body md"></div></div>
+    <div class="cloud cloud2"><div id="cloud2-body" class="cloud-body sm"></div></div>
+    <div class="cloud cloud3"><div id="cloud3-body" class="cloud-body lg"></div></div>
+
+    <div class="sun" id="sun">
+      <div class="sun-rays">
+        <div class="sun-ray" style="transform:rotate(0deg) translateY(-28px)"></div>
+        <div class="sun-ray" style="transform:rotate(45deg) translateY(-28px)"></div>
+        <div class="sun-ray" style="transform:rotate(90deg) translateY(-28px)"></div>
+        <div class="sun-ray" style="transform:rotate(135deg) translateY(-28px)"></div>
+        <div class="sun-ray" style="transform:rotate(180deg) translateY(-28px)"></div>
+        <div class="sun-ray" style="transform:rotate(225deg) translateY(-28px)"></div>
+        <div class="sun-ray" style="transform:rotate(270deg) translateY(-28px)"></div>
+        <div class="sun-ray" style="transform:rotate(315deg) translateY(-28px)"></div>
+      </div>
+      <div class="sun-body"></div>
+    </div>
+
+    <div class="moon" id="moon">🌙</div>
+
+    <!-- Rain -->
+    <div class="rain-container" id="rain"></div>
+    <!-- Snow -->
+    <div class="snow-container" id="snow"></div>
+    <!-- Lightning -->
+    <div class="lightning" id="lightning">⚡</div>
+  </div>
+
+  <!-- Ground -->
+  <div id="ground"></div>
+  <div id="ground-objects">
+    <!-- Flowers -->
+    <div class="flower flower1"><div class="flower-head" style="font-size:28px">🌸</div><div class="flower-stem" style="height:22px"></div></div>
+    <div class="flower flower2"><div class="flower-head" style="font-size:24px">🌼</div><div class="flower-stem" style="height:18px"></div></div>
+    <div class="flower flower3"><div class="flower-head" style="font-size:26px">🌺</div><div class="flower-stem" style="height:20px"></div></div>
+
+    <!-- Mushroom -->
+    <div class="mushroom" id="mushroom">🍄</div>
+
+    <!-- Butterflies -->
+    <div class="butterfly bf1">🦋</div>
+    <div class="butterfly bf2">🦋</div>
+
+    <!-- Ladybug -->
+    <div class="ladybug lb1">🐞</div>
+
+    <!-- Snail -->
+    <div class="snail sn1" id="snail">🐌</div>
+
+    <!-- Frogs -->
+    <div class="frog fr1" id="frog1">🐸</div>
+    <div class="frog fr2" id="frog2">🐸</div>
+
+    <!-- Rabbits -->
+    <div class="rabbit rb1" id="rabbit1">🐰</div>
+    <div class="rabbit rb2" id="rabbit2">🐇</div>
+
+    <!-- Bee -->
+    <div class="bee bee1" id="bee">🐝</div>
+
+    <!-- Hiding text for stormy -->
+    <div class="hide-bugs" id="hide-bugs">🐛🐞🦋 みんなかくれた！</div>
+
+    <!-- Puddles -->
+    <div class="puddle p1" id="puddle1"></div>
+    <div class="puddle p2" id="puddle2"></div>
+
+    <!-- Snow ground -->
+    <div class="snow-ground" id="snow-ground">
+      <span>❄️</span><span>❄️</span><span>❄️</span><span>❄️</span><span>❄️</span>
+    </div>
+  </div>
+</div>
+
+<!-- Weather controls -->
+<div id="controls">
+  <button class="wx-btn active" data-wx="sunny"  onclick="setWeather('sunny')">
+    <span class="icon">☀️</span>
+    <span class="label">はれ</span>
+  </button>
+  <button class="wx-btn" data-wx="cloudy" onclick="setWeather('cloudy')">
+    <span class="icon">⛅</span>
+    <span class="label">くもり</span>
+  </button>
+  <button class="wx-btn" data-wx="rainy"  onclick="setWeather('rainy')">
+    <span class="icon">🌧️</span>
+    <span class="label">あめ</span>
+  </button>
+  <button class="wx-btn" data-wx="snowy"  onclick="setWeather('snowy')">
+    <span class="icon">❄️</span>
+    <span class="label">ゆき</span>
+  </button>
+  <button class="wx-btn" data-wx="stormy" onclick="setWeather('stormy')">
+    <span class="icon">⛈️</span>
+    <span class="label">かみなり</span>
+  </button>
+</div>
+
+<script>
+const WEATHERS = {
+  sunny:  { label: '☀️ はれ',    sky: '',        clouds: ['','',''] },
+  cloudy: { label: '⛅ くもり',  sky: 'cloudy',  clouds: ['dark','dark','dark'] },
+  rainy:  { label: '🌧️ あめ',    sky: 'rainy',   clouds: ['dark','dark','dark'] },
+  snowy:  { label: '❄️ ゆき',    sky: 'snowy',   clouds: ['dark','dark','dark'] },
+  stormy: { label: '⛈️ かみなり', sky: 'stormy',  clouds: ['storm','storm','storm'] },
+};
+
+let currentWx = 'sunny';
+let lightningTimer = null;
+
+function setWeather(wx) {
+  if (wx === currentWx) return;
+  currentWx = wx;
+  const cfg = WEATHERS[wx];
+
+  // Update buttons
+  document.querySelectorAll('.wx-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.wx === wx);
+  });
+
+  // Sky
+  const sky = document.getElementById('sky');
+  sky.className = cfg.sky;
+
+  // Ground
+  const ground = document.getElementById('ground');
+  ground.className = cfg.sky;
+
+  // Clouds
+  ['cloud1-body','cloud2-body','cloud3-body'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    const base = ['md','sm','lg'][i];
+    el.className = 'cloud-body ' + base + (cfg.clouds[i] ? ' ' + cfg.clouds[i] : '');
+  });
+
+  // Sun
+  document.getElementById('sun').classList.toggle('hidden', wx !== 'sunny');
+  // Moon
+  document.getElementById('moon').classList.toggle('show', wx === 'stormy');
+
+  // Rain
+  document.getElementById('rain').classList.toggle('show', wx === 'rainy');
+  // Snow
+  document.getElementById('snow').classList.toggle('show', wx === 'snowy');
+
+  // Creatures
+  const isSunny  = wx === 'sunny';
+  const isCloudy = wx === 'cloudy';
+  const isRainy  = wx === 'rainy';
+  const isSnowy  = wx === 'snowy';
+  const isStormy = wx === 'stormy';
+
+  // butterflies: sunny + cloudy
+  document.querySelectorAll('.butterfly').forEach(e =>
+    e.classList.toggle('hidden', !(isSunny || isCloudy)));
+
+  // ladybug: sunny
+  document.querySelectorAll('.ladybug').forEach(e =>
+    e.classList.toggle('hidden', !isSunny));
+
+  // flowers: sunny + cloudy
+  document.querySelectorAll('.flower').forEach(e =>
+    e.classList.toggle('hidden', isStormy));
+
+  // snail + frogs: rainy
+  document.getElementById('snail').classList.toggle('show', isRainy);
+  document.getElementById('frog1').classList.toggle('show', isRainy);
+  document.getElementById('frog2').classList.toggle('show', isRainy);
+
+  // puddles: rainy
+  document.getElementById('puddle1').classList.toggle('show', isRainy);
+  document.getElementById('puddle2').classList.toggle('show', isRainy);
+
+  // rabbits: snowy
+  document.getElementById('rabbit1').classList.toggle('show', isSnowy);
+  document.getElementById('rabbit2').classList.toggle('show', isSnowy);
+
+  // snow ground sparkles
+  document.getElementById('snow-ground').classList.toggle('show', isSnowy);
+
+  // bee: cloudy
+  document.getElementById('bee').classList.toggle('show', isCloudy);
+
+  // mushroom + hiding message: stormy
+  document.getElementById('mushroom').classList.toggle('show', isStormy);
+  document.getElementById('hide-bugs').classList.toggle('show', isStormy);
+
+  // Lightning flash loop
+  clearInterval(lightningTimer);
+  if (isStormy) {
+    lightningTimer = setInterval(flashLightning, 3500);
+    setTimeout(flashLightning, 400);
+  } else {
+    document.getElementById('lightning').classList.remove('flash');
+  }
+
+  // Label
+  const label = document.getElementById('wx-label');
+  label.textContent = cfg.label;
+  label.style.animation = 'none';
+  void label.offsetWidth;
+  label.style.animation = '';
+
+  // Celebration stars on change
+  spawnStars();
+}
+
+function flashLightning() {
+  const el = document.getElementById('lightning');
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 180);
+  setTimeout(() => { el.classList.add('flash'); setTimeout(() => el.classList.remove('flash'), 100); }, 300);
+}
+
+function spawnStars() {
+  const emojis = ['✨','⭐','🌟','💫'];
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => {
+      const s = document.createElement('div');
+      s.className = 'star-pop';
+      s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      s.style.left = (20 + Math.random() * 60) + 'vw';
+      s.style.top  = (20 + Math.random() * 40) + 'vh';
+      s.style.setProperty('--dx', (Math.random()*80-40)+'px');
+      s.style.setProperty('--dy', (Math.random()*80-40)+'px');
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 1000);
+    }, i * 80);
+  }
+}
+
+// Build rain drops
+(function buildRain() {
+  const container = document.getElementById('rain');
+  for (let i = 0; i < 50; i++) {
+    const d = document.createElement('div');
+    d.className = 'raindrop';
+    d.style.left   = Math.random() * 100 + '%';
+    d.style.height = (14 + Math.random() * 20) + 'px';
+    d.style.animationDuration  = (0.6 + Math.random() * 0.8) + 's';
+    d.style.animationDelay     = (Math.random() * 1.5) + 's';
+    d.style.opacity = 0.5 + Math.random() * 0.5;
+    container.appendChild(d);
+  }
+})();
+
+// Build snowflakes
+(function buildSnow() {
+  const container = document.getElementById('snow');
+  const flakes = ['❄','❅','❆','✦'];
+  for (let i = 0; i < 30; i++) {
+    const s = document.createElement('div');
+    s.className = 'snowflake';
+    s.textContent = flakes[Math.floor(Math.random()*flakes.length)];
+    s.style.left   = Math.random() * 100 + '%';
+    s.style.fontSize = (12 + Math.random() * 16) + 'px';
+    s.style.animationDuration  = (3 + Math.random() * 4) + 's';
+    s.style.animationDelay     = (Math.random() * 3) + 's';
+    container.appendChild(s);
+  }
+})();
+</script>
+</body>
+</html>
