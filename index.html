@@ -6,23 +6,18 @@
   <title>あそびのへや</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: "Hiragino Maru Gothic ProN", sans-serif;
+    body { font-family: "Hiragino Maru Gothic ProN", sans-serif;
       background: linear-gradient(135deg, #fff9c4 0%, #fce4ec 50%, #e3f2fd 100%);
-      min-height: 100vh;
-      display: flex; flex-direction: column; align-items: center;
-      padding: 40px 16px 64px;
-    }
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+      padding: 40px 16px 64px; }
     h1 { font-size: 2.4rem; color: #e91e63; text-shadow: 3px 3px 0 #fff; margin-bottom: 6px; letter-spacing: 0.1em; }
     .subtitle { font-size: 1rem; color: #999; margin-bottom: 48px; }
-    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 24px; width: 100%; max-width: 900px; }
-    .game-card {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 24px; width: 100%; max-width: 900px; }
+    .game-card { display: flex; flex-direction: column; align-items: center; justify-content: center;
       background: #fff; border-radius: 28px; padding: 36px 16px; text-decoration: none;
       box-shadow: 0 8px 24px rgba(0,0,0,0.12);
       transition: transform 0.15s, box-shadow 0.15s;
-      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-    }
+      touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     .game-card:active { transform: scale(0.94); box-shadow: 0 3px 10px rgba(0,0,0,0.12); }
     .game-icon { font-size: 4.5rem; margin-bottom: 16px; line-height: 1; }
     .game-title { font-size: 1.15rem; font-weight: bold; color: #333; text-align: center; }
@@ -33,26 +28,11 @@
   <h1>🌟 あそびのへや</h1>
   <p class="subtitle">ゲームをえらんでね</p>
   <div class="game-grid">
-    <a class="game-card" href="games/piano/index.html">
-      <div class="game-icon">🎹</div>
-      <div class="game-title">おんがくタッチ</div>
-      <div class="game-desc">たたくとおとがなるよ</div>
-    </a>
-    <a class="game-card" href="games/shapes/index.html">
-      <div class="game-icon">🔵</div>
-      <div class="game-title">かたち・いろあそび</div>
-      <div class="game-desc">おなじいろをさがそう</div>
-    </a>
-    <a class="game-card" href="games/toothbrush/index.html">
-      <div class="game-icon">🦷</div>
-      <div class="game-title">はみがきタイマー</div>
-      <div class="game-desc">2ふんみがいてぴかぴか</div>
-    </a>
-    <a class="game-card" href="games/bento/index.html">
-      <div class="game-icon">🍱</div>
-      <div class="game-title">おべんとうをつくろう</div>
-      <div class="game-desc">すきなものをえらんでね</div>
-    </a>
+    <a class="game-card" href="games/piano/index.html"><div class="game-icon">🎹</div><div class="game-title">おんがくタッチ</div><div class="game-desc">たたくとおとがなるよ</div></a>
+    <a class="game-card" href="games/shapes/index.html"><div class="game-icon">🔵</div><div class="game-title">かたち・いろあそび</div><div class="game-desc">おなじいろをさがそう</div></a>
+    <a class="game-card" href="games/toothbrush/index.html"><div class="game-icon">🦷</div><div class="game-title">はみがきタイマー</div><div class="game-desc">2ふんみがいてぴかぴか</div></a>
+    <a class="game-card" href="games/bento/index.html"><div class="game-icon">🍱</div><div class="game-title">おべんとうをつくろう</div><div class="game-desc">すきなものをえらんでね</div></a>
+    <a class="game-card" href="games/sort/index.html"><div class="game-icon">🔺</div><div class="game-title">なかまわけあそび</div><div class="game-desc">おなじなかまにわけよう</div></a>
   </div>
 </body>
 </html>
