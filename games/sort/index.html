@@ -10,7 +10,7 @@
       background: linear-gradient(160deg, #e8f5e9 0%, #e3f2fd 100%);
       min-height: 100vh; min-height: 100dvh;
       display: flex; flex-direction: column; align-items: center;
-      padding: 54px 10px 20px;
+      padding: 54px 10px 16px;
       font-family: "Hiragino Maru Gothic ProN", "Rounded Mplus 1c", sans-serif;
       touch-action: none;
       user-select: none; -webkit-user-select: none;
@@ -34,94 +34,81 @@
 
     /* ── ゾーン ── */
     #zones {
-      display: flex; gap: 10px;
-      width: 100%; max-width: 500px;
-      margin-bottom: 10px;
+      display: flex; gap: 12px;
+      width: 100%; max-width: 520px;
+      margin-bottom: 12px;
     }
     .zone {
-      flex: 1; min-height: 180px;
-      border: 4px dashed rgba(0,0,0,0.18);
-      border-radius: 20px;
-      background: rgba(255,255,255,0.5);
+      flex: 1; min-height: 200px;
+      border: 4px dashed rgba(0,0,0,0.15);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.45);
       display: flex; flex-direction: column; align-items: center;
-      padding: 8px 6px 6px;
-      position: relative;
+      padding: 10px 8px 8px;
       transition: background 0.2s, border-color 0.2s;
     }
-    .zone.over { background: rgba(255,255,255,0.85); border-color: rgba(0,0,0,0.35); }
+    .zone.over { background: rgba(255,255,255,0.8); border-color: rgba(0,0,0,0.3); }
+    .zone.matched {
+      background: rgba(255,253,220,0.85);
+      border-color: #ffc107;
+      border-style: solid;
+    }
 
     .zone-label {
-      font-size: 0.72rem; font-weight: bold; color: rgba(0,0,0,0.35);
-      margin-bottom: 6px; letter-spacing: 0.05em;
+      font-size: 0.78rem; font-weight: bold; color: rgba(0,0,0,0.28);
+      margin-bottom: 8px; letter-spacing: 0.04em; min-height: 1.2em;
+      transition: all 0.3s;
     }
-    .zone-label.revealed { color: #e64a19; font-size: 0.85rem; }
+    .zone-label.revealed {
+      font-size: 1rem; color: #e64a19;
+    }
 
     .zone-items {
-      display: flex; flex-wrap: wrap; gap: 6px;
+      display: flex; flex-wrap: wrap; gap: 8px;
       justify-content: center; align-items: center;
     }
 
     /* ── アイテムバンク ── */
-    #bank-wrap { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 500px; }
-    #bank-label { font-size: 0.72rem; color: rgba(0,0,0,0.3); margin-bottom: 4px; }
+    #bank-wrap { width: 100%; max-width: 520px; }
+    #bank-hint { font-size: 0.7rem; color: rgba(0,0,0,0.28); text-align: center; margin-bottom: 4px; }
     #bank {
-      display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-      min-height: 96px;
-      background: rgba(255,255,255,0.4);
-      border-radius: 16px; padding: 8px;
+      display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+      min-height: 100px;
+      background: rgba(255,255,255,0.38);
+      border-radius: 18px; padding: 10px;
       width: 100%;
     }
 
     /* ── アイテムカード ── */
     .item-card {
-      width: 76px; height: 76px;
-      background: white; border-radius: 14px;
+      background: white; border-radius: 18px;
       display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-      cursor: grab; position: relative;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      cursor: grab; flex-shrink: 0;
       transition: box-shadow 0.15s;
-      flex-shrink: 0;
     }
-    .item-card.sm { width: 58px; height: 58px; border-radius: 12px; }
-    .item-card svg { width: 70%; height: 70%; }
+    .item-card.big { width: 108px; height: 108px; }
+    .item-card.sm  { width:  80px; height:  80px; border-radius: 14px; }
+    .item-card svg { width: 72%; height: 72%; }
     .item-card.dragging { opacity: 0; }
 
-    /* ── ゴースト（ドラッグ中に浮かぶもの） ── */
+    /* ── ゴースト ── */
     #ghost {
       position: fixed; pointer-events: none; z-index: 200;
-      width: 76px; height: 76px;
-      background: white; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.28);
-      transform: rotate(4deg) scale(1.08);
-      display: none;
+      background: white; border-radius: 18px;
+      display: none; align-items: center; justify-content: center;
+      box-shadow: 0 10px 28px rgba(0,0,0,0.3);
+      transform: rotate(5deg) scale(1.1);
     }
-    #ghost svg { width: 70%; height: 70%; }
-
-    /* ── 判定バナー ── */
-    #result-banner {
-      position: fixed; inset: 0; display: none;
-      align-items: center; justify-content: center;
-      z-index: 300; pointer-events: none;
-    }
-    #result-banner.show { display: flex; }
-    .banner-box {
-      background: white; border-radius: 28px;
-      padding: 24px 36px; text-align: center;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.25);
-      animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
-    }
-    @keyframes popIn { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
-    .banner-emoji { font-size: 3rem; margin-bottom: 8px; }
-    .banner-title { font-size: 1.5rem; font-weight: bold; color: #e64a19; }
-    .banner-rules { font-size: 0.9rem; color: #555; margin-top: 8px; line-height: 1.7; }
-    .banner-miss  { font-size: 1.2rem; font-weight: bold; color: #78909c; }
+    #ghost.big { width: 108px; height: 108px; }
+    #ghost.sm  { width:  80px; height:  80px; border-radius: 14px; }
+    #ghost svg { width: 72%; height: 72%; }
 
     /* お祝い */
     #celebration { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 250; pointer-events: none; }
     #celebration.show { display: flex; }
-    .star-burst { position: absolute; font-size: 2.4rem; animation: sf 1.6s ease-out forwards; }
-    @keyframes sf { 0%{opacity:1;transform:translate(0,0) scale(1)} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.3)} }
+    .star-burst { position: absolute; font-size: 2.8rem; animation: sf 1.8s ease-out forwards; }
+    @keyframes sf { 0%{opacity:1;transform:translate(0,0) scale(1)} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.2)} }
   </style>
 </head>
 <body>
@@ -131,182 +118,129 @@
 
 <div id="zones">
   <div class="zone" id="zone-a">
-    <div class="zone-label" id="label-a">Aグループ</div>
+    <div class="zone-label" id="label-a">Ａ</div>
     <div class="zone-items" id="items-a"></div>
   </div>
   <div class="zone" id="zone-b">
-    <div class="zone-label" id="label-b">Bグループ</div>
+    <div class="zone-label" id="label-b">Ｂ</div>
     <div class="zone-items" id="items-b"></div>
   </div>
 </div>
 
 <div id="bank-wrap">
-  <div id="bank-label">ここからドラッグしてわけよう</div>
+  <div id="bank-hint">ドラッグしてわけよう</div>
   <div id="bank"></div>
 </div>
 
 <div id="ghost"></div>
-<div id="result-banner"></div>
 <div id="celebration"></div>
 
 <script src="../../shared/audio.js"></script>
 <script>
-// ═══════════════════════════════════════════
-// SVGイラスト
-// ═══════════════════════════════════════════
+// ═══════════════ SVG ═══════════════
 function makeSVG(shape, color) {
   const C = { red:'#f44336', blue:'#2196f3', yellow:'#ffeb3b', green:'#4caf50', orange:'#ff9800', purple:'#9c27b0' };
-  const c = C[color] || color;
-  const sh = {
-    circle:   `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="${c}"/><circle cx="38" cy="36" r="10" fill="rgba(255,255,255,0.25)"/></svg>`,
-    triangle: `<svg viewBox="0 0 100 100"><polygon points="50,8 92,90 8,90" fill="${c}"/><polygon points="50,20 70,60 30,60" fill="rgba(255,255,255,0.18)"/></svg>`,
-    square:   `<svg viewBox="0 0 100 100"><rect x="8" y="8" width="84" height="84" rx="12" fill="${c}"/><rect x="16" y="16" width="30" height="14" rx="6" fill="rgba(255,255,255,0.25)"/></svg>`,
-    star:     (()=>{
-      const pts=[]; for(let i=0;i<10;i++){const r=i%2===0?44:20,a=(Math.PI/5)*i-Math.PI/2;pts.push(`${50+r*Math.cos(a)},${50+r*Math.sin(a)}`);}
-      return `<svg viewBox="0 0 100 100"><polygon points="${pts.join(' ')}" fill="${c}"/><circle cx="40" cy="38" r="7" fill="rgba(255,255,255,0.22)"/></svg>`;
-    })(),
-    heart:    `<svg viewBox="0 0 100 100"><path d="M50,82 Q10,58 10,34 Q10,14 28,14 Q40,14 50,28 Q60,14 72,14 Q90,14 90,34 Q90,58 50,82Z" fill="${c}"/><ellipse cx="34" cy="26" rx="8" ry="5" fill="rgba(255,255,255,0.25)"/></svg>`,
-    // 動物/恐竜
-    trex:     `<svg viewBox="0 0 100 100"><ellipse cx="55" cy="58" rx="28" ry="20" fill="#66bb6a"/><circle cx="72" cy="40" r="18" fill="#66bb6a"/><circle cx="80" cy="34" r="5" fill="#1b5e20"/><path d="M60,58 L50,80 L56,80 L60,68 L64,80 L70,80 L64,58Z" fill="#4caf50"/><path d="M84,46 L94,40 L90,52Z" fill="#4caf50"/><path d="M72,50 L68,54 L74,56Z" fill="#2e7d32"/></svg>`,
-    brachi:   `<svg viewBox="0 0 100 100"><ellipse cx="42" cy="68" rx="26" ry="16" fill="#ffb74d"/><rect x="28" y="30" width="10" height="42" rx="5" fill="#ffa726"/><ellipse cx="33" cy="24" rx="12" ry="10" fill="#ffb74d"/><rect x="22" y="62" width="8" height="22" rx="4" fill="#fb8c00"/><rect x="36" y="62" width="8" height="22" rx="4" fill="#fb8c00"/><rect x="50" y="62" width="8" height="22" rx="4" fill="#fb8c00"/><rect x="60" y="62" width="8" height="22" rx="4" fill="#fb8c00"/><circle cx="28" cy="20" r="4" fill="#e65100"/></svg>`,
-    stego:    `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="72" rx="32" ry="18" fill="#ab47bc"/><circle cx="24" cy="66" r="14" fill="#9c27b0"/><rect x="20" y="68" width="8" height="18" rx="4" fill="#7b1fa2"/><rect x="34" y="68" width="8" height="18" rx="4" fill="#7b1fa2"/><rect x="52" y="68" width="8" height="18" rx="4" fill="#7b1fa2"/><rect x="64" y="68" width="8" height="18" rx="4" fill="#7b1fa2"/><polygon points="26,52 30,30 34,52" fill="#ce93d8"/><polygon points="38,60 42,36 46,60" fill="#ce93d8"/><polygon points="48,58 52,38 56,58" fill="#ce93d8"/></svg>`,
-    cat:      `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="66" rx="28" ry="22" fill="#ffcc80"/><circle cx="50" cy="44" r="22" fill="#ffcc80"/><polygon points="30,30 24,8 42,24" fill="#ffa726"/><polygon points="70,30 76,8 58,24" fill="#ffa726"/><circle cx="42" cy="40" r="5" fill="#5d4037"/><circle cx="58" cy="40" r="5" fill="#5d4037"/><ellipse cx="50" cy="50" rx="6" ry="4" fill="#ef9a9a"/><path d="M44,50 Q38,46 30,48 M56,50 Q62,46 70,48" stroke="#5d4037" stroke-width="1.5" fill="none"/></svg>`,
-    dog:      `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="66" rx="28" ry="22" fill="#bcaaa4"/><circle cx="50" cy="44" r="20" fill="#bcaaa4"/><ellipse cx="32" cy="38" rx="10" ry="16" fill="#a1887f"/><ellipse cx="68" cy="38" rx="10" ry="16" fill="#a1887f"/><circle cx="42" cy="40" r="5" fill="#4e342e"/><circle cx="58" cy="40" r="5" fill="#4e342e"/><ellipse cx="50" cy="52" rx="8" ry="6" fill="#ef9a9a"/><path d="M42,56 Q50,62 58,56" stroke="#c2185b" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
-    fish:     `<svg viewBox="0 0 100 100"><ellipse cx="46" cy="52" rx="30" ry="18" fill="#4fc3f7"/><polygon points="76,52 92,36 92,68" fill="#29b6f6"/><circle cx="28" cy="46" r="5" fill="#01579b"/><circle cx="30" cy="44" r="2" fill="white"/><path d="M40,42 Q46,36 52,42" stroke="#0288d1" stroke-width="2" fill="none"/><path d="M40,62 Q46,68 52,62" stroke="#0288d1" stroke-width="2" fill="none"/><ellipse cx="36" cy="52" rx="14" ry="8" fill="rgba(255,255,255,0.18)"/></svg>`,
-    bird:     `<svg viewBox="0 0 100 100"><ellipse cx="54" cy="60" rx="26" ry="18" fill="#f48fb1"/><circle cx="36" cy="46" r="18" fill="#f48fb1"/><path d="M24,40 Q14,28 8,34 Q14,44 24,44Z" fill="#f06292"/><circle cx="28" cy="40" r="6" fill="#1a1a1a"/><circle cx="26" cy="38" r="2" fill="white"/><polygon points="20,46 14,50 22,52" fill="#ffb74d"/><path d="M46,46 Q60,28 80,34 Q70,52 46,54Z" fill="#f06292"/></svg>`,
-    rabbit:   `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="70" rx="24" ry="20" fill="#eeeeee"/><circle cx="50" cy="48" r="18" fill="#eeeeee"/><rect x="34" y="10" width="10" height="32" rx="5" fill="#e0e0e0"/><rect x="56" y="10" width="10" height="32" rx="5" fill="#e0e0e0"/><rect x="35" y="12" width="8" height="26" rx="4" fill="#f8bbd0"/><rect x="57" y="12" width="8" height="26" rx="4" fill="#f8bbd0"/><circle cx="42" cy="44" r="5" fill="#616161"/><circle cx="58" cy="44" r="5" fill="#616161"/><ellipse cx="50" cy="54" rx="5" ry="3" fill="#f48fb1"/></svg>`,
-  };
-  return sh[shape] || `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="${c}"/></svg>`;
+  const c = C[color] || '#aaa';
+  if (shape === 'circle')
+    return `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="${c}"/><circle cx="36" cy="34" r="12" fill="rgba(255,255,255,0.25)"/></svg>`;
+  if (shape === 'triangle')
+    return `<svg viewBox="0 0 100 100"><polygon points="50,6 94,90 6,90" fill="${c}"/><polygon points="50,18 70,58 30,58" fill="rgba(255,255,255,0.18)"/></svg>`;
+  if (shape === 'square')
+    return `<svg viewBox="0 0 100 100"><rect x="6" y="6" width="88" height="88" rx="14" fill="${c}"/><rect x="14" y="14" width="32" height="16" rx="7" fill="rgba(255,255,255,0.25)"/></svg>`;
+  if (shape === 'star') {
+    const pts=[]; for(let i=0;i<10;i++){const r=i%2===0?44:20,a=(Math.PI/5)*i-Math.PI/2;pts.push(`${50+r*Math.cos(a)},${50+r*Math.sin(a)}`);}
+    return `<svg viewBox="0 0 100 100"><polygon points="${pts.join(' ')}" fill="${c}"/><circle cx="40" cy="36" r="8" fill="rgba(255,255,255,0.22)"/></svg>`;
+  }
+  if (shape === 'heart')
+    return `<svg viewBox="0 0 100 100"><path d="M50,84 Q8,58 8,32 Q8,12 26,12 Q40,12 50,28 Q60,12 74,12 Q92,12 92,32 Q92,58 50,84Z" fill="${c}"/><ellipse cx="32" cy="26" rx="9" ry="6" fill="rgba(255,255,255,0.26)"/></svg>`;
+  if (shape === 'trex')
+    return `<svg viewBox="0 0 100 100"><ellipse cx="54" cy="60" rx="28" ry="20" fill="#66bb6a"/><circle cx="72" cy="40" r="18" fill="#66bb6a"/><circle cx="80" cy="33" r="6" fill="#1b5e20"/><circle cx="82" cy="31" r="2.5" fill="white"/><path d="M58,60 L48,82 L55,82 L58,70 L62,82 L69,82 L62,60Z" fill="#4caf50"/><path d="M84,48 L96,40 L92,54Z" fill="#4caf50"/><path d="M60,38 L56,46 L64,46Z" fill="#2e7d32"/></svg>`;
+  if (shape === 'brachi')
+    return `<svg viewBox="0 0 100 100"><ellipse cx="54" cy="70" rx="30" ry="18" fill="#ffb74d"/><rect x="26" y="28" width="12" height="46" rx="6" fill="#ffa726"/><ellipse cx="32" cy="22" rx="14" ry="11" fill="#ffb74d"/><rect x="20" y="64" width="9" height="24" rx="4" fill="#fb8c00"/><rect x="36" y="64" width="9" height="24" rx="4" fill="#fb8c00"/><rect x="52" y="64" width="9" height="24" rx="4" fill="#fb8c00"/><rect x="65" y="64" width="9" height="24" rx="4" fill="#fb8c00"/><circle cx="26" cy="16" r="5" fill="#e65100"/></svg>`;
+  if (shape === 'stego')
+    return `<svg viewBox="0 0 100 100"><ellipse cx="52" cy="72" rx="34" ry="18" fill="#ab47bc"/><circle cx="24" cy="66" r="16" fill="#9c27b0"/><rect x="18" y="70" width="9" height="20" rx="4" fill="#7b1fa2"/><rect x="34" y="70" width="9" height="20" rx="4" fill="#7b1fa2"/><rect x="52" y="70" width="9" height="20" rx="4" fill="#7b1fa2"/><rect x="66" y="70" width="9" height="20" rx="4" fill="#7b1fa2"/><polygon points="26,52 30,28 34,52" fill="#ce93d8"/><polygon points="40,60 44,34 48,60" fill="#ce93d8"/><polygon points="52,58 56,36 60,58" fill="#ce93d8"/><circle cx="19" cy="60" r="4" fill="#e65100"/></svg>`;
+  if (shape === 'cat')
+    return `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="68" rx="28" ry="22" fill="#ffcc80"/><circle cx="50" cy="46" r="22" fill="#ffcc80"/><polygon points="28,30 22,6 40,24" fill="#ffa726"/><polygon points="72,30 78,6 60,24" fill="#ffa726"/><circle cx="42" cy="42" r="5" fill="#4e342e"/><circle cx="58" cy="42" r="5" fill="#4e342e"/><circle cx="44" cy="40" r="2" fill="white"/><circle cx="60" cy="40" r="2" fill="white"/><ellipse cx="50" cy="52" rx="6" ry="4" fill="#ef9a9a"/><path d="M44,52 Q38,48 28,50 M56,52 Q62,48 72,50" stroke="#5d4037" stroke-width="1.5" fill="none"/></svg>`;
+  if (shape === 'dog')
+    return `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="67" rx="28" ry="21" fill="#bcaaa4"/><circle cx="50" cy="46" r="20" fill="#bcaaa4"/><ellipse cx="32" cy="40" rx="10" ry="17" fill="#a1887f"/><ellipse cx="68" cy="40" rx="10" ry="17" fill="#a1887f"/><circle cx="42" cy="42" r="5" fill="#4e342e"/><circle cx="58" cy="42" r="5" fill="#4e342e"/><circle cx="44" cy="40" r="2" fill="white"/><circle cx="60" cy="40" r="2" fill="white"/><ellipse cx="50" cy="53" rx="8" ry="6" fill="#ef9a9a"/><path d="M42,57 Q50,63 58,57" stroke="#c2185b" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`;
+  if (shape === 'fish')
+    return `<svg viewBox="0 0 100 100"><ellipse cx="46" cy="52" rx="30" ry="18" fill="#4fc3f7"/><polygon points="76,52 94,34 94,70" fill="#29b6f6"/><circle cx="27" cy="46" r="6" fill="#01579b"/><circle cx="29" cy="44" r="2.5" fill="white"/><path d="M40,42 Q46,34 54,42" stroke="#0288d1" stroke-width="2.5" fill="none"/><path d="M40,62 Q46,70 54,62" stroke="#0288d1" stroke-width="2.5" fill="none"/><ellipse cx="38" cy="52" rx="14" ry="9" fill="rgba(255,255,255,0.18)"/></svg>`;
+  if (shape === 'bird')
+    return `<svg viewBox="0 0 100 100"><ellipse cx="56" cy="62" rx="26" ry="18" fill="#f48fb1"/><circle cx="36" cy="46" r="20" fill="#f48fb1"/><path d="M22,38 Q10,26 6,32 Q12,44 22,44Z" fill="#f06292"/><circle cx="28" cy="40" r="7" fill="#1a1a1a"/><circle cx="26" cy="38" r="2.5" fill="white"/><polygon points="18,46 12,51 20,53" fill="#ffb74d"/><path d="M48,48 Q64,28 84,34 Q74,54 48,56Z" fill="#f06292"/></svg>`;
+  if (shape === 'rabbit')
+    return `<svg viewBox="0 0 100 100"><ellipse cx="50" cy="70" rx="25" ry="20" fill="#eeeeee"/><circle cx="50" cy="50" r="19" fill="#eeeeee"/><rect x="34" y="8" width="11" height="34" rx="5.5" fill="#e0e0e0"/><rect x="55" y="8" width="11" height="34" rx="5.5" fill="#e0e0e0"/><rect x="35" y="10" width="9" height="28" rx="4.5" fill="#f8bbd0"/><rect x="56" y="10" width="9" height="28" rx="4.5" fill="#f8bbd0"/><circle cx="42" cy="46" r="5" fill="#616161"/><circle cx="58" cy="46" r="5" fill="#616161"/><circle cx="44" cy="44" r="2" fill="white"/><circle cx="60" cy="44" r="2" fill="white"/><ellipse cx="50" cy="55" rx="5" ry="3.5" fill="#f48fb1"/></svg>`;
+  return `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="#aaa"/></svg>`;
 }
 
-// ═══════════════════════════════════════════
-// データ
-// ═══════════════════════════════════════════
-const COLORS   = ['red','blue','yellow','green','orange','purple'];
-const SHAPES   = ['circle','triangle','square','star','heart'];
-const SIZES    = ['big','small'];
-const DINOS    = ['trex','brachi','stego'];
-const ANIMALS  = ['cat','dog','fish','bird','rabbit'];
+// ═══════════════ データ ═══════════════
+const DINOS   = ['trex','brachi','stego'];
+const ANIMALS = ['cat','dog','fish','bird','rabbit'];
+const SHAPES  = ['circle','triangle','square','star','heart'];
+const COLORS  = ['red','blue','yellow','green','orange','purple'];
+const SIZES   = ['big','small'];
 
-// ルール定義
 const RULES = [
-  {
-    id:'size',
-    check:(a,b)=> a.every(i=>i.size==='big')   && b.every(i=>i.size==='small'),
-    labelA:()=>'おおきい 🔵', labelB:()=>'ちいさい 🔵',
-  },
-  {
-    id:'size_rev',
-    check:(a,b)=> a.every(i=>i.size==='small') && b.every(i=>i.size==='big'),
-    labelA:()=>'ちいさい 🔵', labelB:()=>'おおきい 🔵',
-  },
-  ...['red','blue','yellow','green','orange','purple'].map(col=>({
-    id:`color_${col}`,
+  { check:(a,b)=> a.every(i=>i.size==='big')   && b.every(i=>i.size==='small'), la:'おおきい 🔵', lb:'ちいさい 🔵' },
+  { check:(a,b)=> a.every(i=>i.size==='small') && b.every(i=>i.size==='big'),   la:'ちいさい 🔵', lb:'おおきい 🔵' },
+  ...COLORS.map(col=>({
     check:(a,b)=> a.every(i=>i.color===col) && b.every(i=>i.color!==col),
-    labelA:()=>({red:'あか❤️',blue:'あお💙',yellow:'きいろ💛',green:'みどり💚',orange:'オレンジ🧡',purple:'むらさき💜'}[col]),
-    labelB:()=>'それ以外',
+    la: {red:'あか❤️',blue:'あお💙',yellow:'きいろ💛',green:'みどり💚',orange:'オレンジ🧡',purple:'むらさき💜'}[col],
+    lb: 'それいがい',
   })),
-  ...['red','blue','yellow','green','orange','purple'].map(col=>({
-    id:`color_${col}_rev`,
-    check:(a,b)=> a.every(i=>i.color!==col) && b.every(i=>i.color===col),
-    labelA:()=>'それ以外',
-    labelB:()=>({red:'あか❤️',blue:'あお💙',yellow:'きいろ💛',green:'みどり💚',orange:'オレンジ🧡',purple:'むらさき💜'}[col]),
+  ...COLORS.map(col=>({
+    check:(a,b)=> b.every(i=>i.color===col) && a.every(i=>i.color!==col),
+    la: 'それいがい',
+    lb: {red:'あか❤️',blue:'あお💙',yellow:'きいろ💛',green:'みどり💚',orange:'オレンジ🧡',purple:'むらさき💜'}[col],
   })),
-  ...['circle','triangle','square','star','heart'].map(sh=>({
-    id:`shape_${sh}`,
+  ...SHAPES.map(sh=>({
     check:(a,b)=> a.every(i=>i.shape===sh) && b.every(i=>i.shape!==sh),
-    labelA:()=>({circle:'まる⭕',triangle:'さんかく🔺',square:'しかく🟦',star:'ほし⭐',heart:'ハート❤️'}[sh]),
-    labelB:()=>'それ以外',
+    la: {circle:'まる⭕',triangle:'さんかく🔺',square:'しかく🟦',star:'ほし⭐',heart:'ハート❤️'}[sh],
+    lb: 'それいがい',
   })),
-  ...['circle','triangle','square','star','heart'].map(sh=>({
-    id:`shape_${sh}_rev`,
+  ...SHAPES.map(sh=>({
     check:(a,b)=> b.every(i=>i.shape===sh) && a.every(i=>i.shape!==sh),
-    labelA:()=>'それ以外',
-    labelB:()=>({circle:'まる⭕',triangle:'さんかく🔺',square:'しかく🟦',star:'ほし⭐',heart:'ハート❤️'}[sh]),
+    la: 'それいがい',
+    lb: {circle:'まる⭕',triangle:'さんかく🔺',square:'しかく🟦',star:'ほし⭐',heart:'ハート❤️'}[sh],
   })),
-  // とがってる vs まるっこい
-  {
-    id:'pointy',
-    check:(a,b)=> a.every(i=>['triangle','star'].includes(i.shape)) && b.every(i=>['circle','square','heart'].includes(i.shape)),
-    labelA:()=>'とがってる 🔺⭐', labelB:()=>'まるっこい ⭕🟦',
-  },
-  {
-    id:'pointy_rev',
-    check:(a,b)=> b.every(i=>['triangle','star'].includes(i.shape)) && a.every(i=>['circle','square','heart'].includes(i.shape)),
-    labelA:()=>'まるっこい ⭕🟦', labelB:()=>'とがってる 🔺⭐',
-  },
-  // 恐竜 vs 動物
-  {
-    id:'dino',
-    check:(a,b)=> a.every(i=>DINOS.includes(i.shape)) && b.every(i=>ANIMALS.includes(i.shape)),
-    labelA:()=>'きょうりゅう 🦕', labelB:()=>'どうぶつ 🐱',
-  },
-  {
-    id:'dino_rev',
-    check:(a,b)=> b.every(i=>DINOS.includes(i.shape)) && a.every(i=>ANIMALS.includes(i.shape)),
-    labelA:()=>'どうぶつ 🐱', labelB:()=>'きょうりゅう 🦕',
-  },
-  // 水にすむ vs そうでない
-  {
-    id:'water',
-    check:(a,b)=> a.every(i=>i.shape==='fish') && b.every(i=>i.shape!=='fish'),
-    labelA:()=>'みずにすむ 🐟', labelB:()=>'りくにすむ',
-  },
-  {
-    id:'water_rev',
-    check:(a,b)=> b.every(i=>i.shape==='fish') && a.every(i=>i.shape!=='fish'),
-    labelA:()=>'りくにすむ', labelB:()=>'みずにすむ 🐟',
-  },
-  // そらをとぶ vs とばない
-  {
-    id:'fly',
-    check:(a,b)=> a.every(i=>i.shape==='bird') && b.every(i=>i.shape!=='bird'),
-    labelA:()=>'そらをとぶ 🐦', labelB:()=>'とばない',
-  },
+  { check:(a,b)=> a.every(i=>['triangle','star'].includes(i.shape)) && b.every(i=>['circle','square','heart'].includes(i.shape)), la:'とがってる🔺', lb:'まるっこい⭕' },
+  { check:(a,b)=> b.every(i=>['triangle','star'].includes(i.shape)) && a.every(i=>['circle','square','heart'].includes(i.shape)), la:'まるっこい⭕', lb:'とがってる🔺' },
+  { check:(a,b)=> a.every(i=>DINOS.includes(i.shape))   && b.every(i=>ANIMALS.includes(i.shape)), la:'きょうりゅう🦕', lb:'どうぶつ🐱' },
+  { check:(a,b)=> b.every(i=>DINOS.includes(i.shape))   && a.every(i=>ANIMALS.includes(i.shape)), la:'どうぶつ🐱', lb:'きょうりゅう🦕' },
+  { check:(a,b)=> a.every(i=>i.shape==='fish') && b.every(i=>i.shape!=='fish'), la:'みずにすむ🐟', lb:'りくにすむ' },
+  { check:(a,b)=> b.every(i=>i.shape==='fish') && a.every(i=>i.shape!=='fish'), la:'りくにすむ', lb:'みずにすむ🐟' },
+  { check:(a,b)=> a.every(i=>i.shape==='bird') && b.every(i=>i.shape!=='bird'), la:'そらをとぶ🐦', lb:'とばない' },
+  { check:(a,b)=> b.every(i=>i.shape==='bird') && a.every(i=>i.shape!=='bird'), la:'とばない', lb:'そらをとぶ🐦' },
 ];
 
-// ═══════════════════════════════════════════
-// アイテム生成
-// ═══════════════════════════════════════════
+let items = [], placement = {}, lastMatchIds = new Set();
+
 function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-let items = [];
-let placement = {}; // id -> 'bank'|'a'|'b'
-
 function generateItems(){
+  lastMatchIds.clear();
   const mode = Math.random() < 0.35 ? 'creature' : 'shape';
   items = [];
   if(mode === 'creature'){
-    // 恐竜3 + 動物2 or 恐竜2 + 動物3
     const split = Math.random()<0.5 ? [3,2] : [2,3];
-    const dinoPool = [...DINOS], animalPool = [...ANIMALS];
-    for(let i=0;i<split[0];i++) items.push({id:Math.random(), shape:rand(dinoPool), color:'green', size:rand(SIZES), mode:'creature'});
-    for(let i=0;i<split[1];i++) items.push({id:Math.random(), shape:rand(animalPool), color:'orange', size:rand(SIZES), mode:'creature'});
+    for(let i=0;i<split[0];i++) items.push({id:i,       shape:rand(DINOS),   color:'green',  size:rand(SIZES)});
+    for(let i=0;i<split[1];i++) items.push({id:i+split[0], shape:rand(ANIMALS), color:'orange', size:rand(SIZES)});
   } else {
-    // 図形モード: 必ず2サイズ以上、2色以上になるよう
-    const palette = COLORS.slice().sort(()=>Math.random()-0.5).slice(0,3);
-    const shapePool = SHAPES.slice().sort(()=>Math.random()-0.5).slice(0,3);
-    for(let i=0;i<5;i++){
-      items.push({id:Math.random(), shape:rand(shapePool), color:rand(palette), size:rand(SIZES), mode:'shape'});
-    }
-    // 少なくとも2サイズある保証
+    const palette    = COLORS.slice().sort(()=>Math.random()-0.5).slice(0,3);
+    const shapePool  = SHAPES.slice().sort(()=>Math.random()-0.5).slice(0,3);
+    for(let i=0;i<5;i++) items.push({id:i, shape:rand(shapePool), color:rand(palette), size:rand(SIZES)});
     if(!items.some(x=>x.size==='big'))   items[0].size='big';
     if(!items.some(x=>x.size==='small')) items[1].size='small';
   }
-  // シャッフル
   items.sort(()=>Math.random()-0.5);
-  placement = {};
-  items.forEach(i=>placement[i.id]='bank');
+  items.forEach((item,idx)=>{ item.id=idx; placement[idx]='bank'; });
 }
 
-// ═══════════════════════════════════════════
-// レンダリング
-// ═══════════════════════════════════════════
-function getItemsIn(zone){ return items.filter(i=>placement[i.id]===zone); }
+// ═══════════════ レンダリング ═══════════════
+function getIn(zone){ return items.filter(i=>placement[i.id]===zone); }
 
 function makeCard(item){
   const card = document.createElement('div');
-  card.className = 'item-card' + (item.size==='small'?' sm':'');
+  card.className = `item-card ${item.size==='big'?'big':'sm'}`;
   card.dataset.id = item.id;
   card.innerHTML = makeSVG(item.shape, item.color);
   attachDrag(card, item);
@@ -314,168 +248,115 @@ function makeCard(item){
 }
 
 function render(){
-  document.getElementById('bank').innerHTML      = '';
-  document.getElementById('items-a').innerHTML   = '';
-  document.getElementById('items-b').innerHTML   = '';
-  document.getElementById('label-a').textContent = 'Aグループ';
-  document.getElementById('label-a').className   = 'zone-label';
-  document.getElementById('label-b').textContent = 'Bグループ';
-  document.getElementById('label-b').className   = 'zone-label';
-
-  getItemsIn('bank').forEach(i=>document.getElementById('bank').appendChild(makeCard(i)));
-  getItemsIn('a').forEach(i=>document.getElementById('items-a').appendChild(makeCard(i)));
-  getItemsIn('b').forEach(i=>document.getElementById('items-b').appendChild(makeCard(i)));
+  document.getElementById('bank').innerHTML    = '';
+  document.getElementById('items-a').innerHTML = '';
+  document.getElementById('items-b').innerHTML = '';
+  getIn('bank').forEach(i=>document.getElementById('bank').appendChild(makeCard(i)));
+  getIn('a').forEach(i=>document.getElementById('items-a').appendChild(makeCard(i)));
+  getIn('b').forEach(i=>document.getElementById('items-b').appendChild(makeCard(i)));
 }
 
-// ═══════════════════════════════════════════
-// ドラッグ（マウス＋タッチ共通）
-// ═══════════════════════════════════════════
-const ghost = document.getElementById('ghost');
-let dragItem = null;
-let dragCard = null;
-
-function startDrag(item, card, clientX, clientY){
-  dragItem = item;
-  dragCard = card;
-  card.classList.add('dragging');
-  ghost.innerHTML = makeSVG(item.shape, item.color);
-  ghost.style.display = 'flex';
-  moveGhost(clientX, clientY);
-}
-function moveGhost(clientX, clientY){
-  ghost.style.left = (clientX - 38)+'px';
-  ghost.style.top  = (clientY - 38)+'px';
-}
-function endDrag(clientX, clientY){
-  if(!dragItem) return;
-  const zones = [
-    {id:'a', el:document.getElementById('zone-a')},
-    {id:'b', el:document.getElementById('zone-b')},
-    {id:'bank', el:document.getElementById('bank')},
-  ];
-  let placed = false;
-  zones.forEach(z=>{
-    const r = z.el.getBoundingClientRect();
-    if(clientX>=r.left && clientX<=r.right && clientY>=r.top && clientY<=r.bottom){
-      placement[dragItem.id] = z.id;
-      placed = true;
-    }
+function resetLabels(){
+  ['a','b'].forEach(z=>{
+    const el = document.getElementById(`label-${z}`);
+    el.textContent = z==='a'?'Ａ':'Ｂ';
+    el.className = 'zone-label';
+    document.getElementById(`zone-${z}`).classList.remove('matched');
   });
-  // どこにも落とさなければ元の場所に戻す（何もしない）
-  ghost.style.display = 'none';
-  if(dragCard) dragCard.classList.remove('dragging');
-  dragItem = null; dragCard = null;
+}
+
+// ═══════════════ ドラッグ ═══════════════
+const ghost = document.getElementById('ghost');
+let dragItem=null, dragCard=null;
+
+function startDrag(item,card,cx,cy){
+  dragItem=item; dragCard=card;
+  card.classList.add('dragging');
+  ghost.className = `${item.size==='big'?'big':'sm'}`;
+  ghost.style.display='flex';
+  ghost.innerHTML = makeSVG(item.shape, item.color);
+  moveGhost(cx,cy);
+}
+function moveGhost(cx,cy){
+  const half = dragItem?.size==='big' ? 54 : 40;
+  ghost.style.left=(cx-half)+'px';
+  ghost.style.top =(cy-half)+'px';
+}
+function endDrag(cx,cy){
+  if(!dragItem) return;
+  const targets = [
+    {id:'a',   el:document.getElementById('zone-a')},
+    {id:'b',   el:document.getElementById('zone-b')},
+    {id:'bank',el:document.getElementById('bank')},
+  ];
+  targets.forEach(t=>{
+    const r=t.el.getBoundingClientRect();
+    if(cx>=r.left&&cx<=r.right&&cy>=r.top&&cy<=r.bottom) placement[dragItem.id]=t.id;
+  });
+  ghost.style.display='none';
+  dragCard?.classList.remove('dragging');
+  dragItem=null; dragCard=null;
   render();
   checkResult();
 }
 
-function attachDrag(card, item){
-  // タッチ
-  card.addEventListener('touchstart', e=>{
-    e.preventDefault();
-    const t=e.touches[0];
-    startDrag(item,card,t.clientX,t.clientY);
-  },{passive:false});
-  // マウス
-  card.addEventListener('mousedown', e=>{
-    e.preventDefault();
-    startDrag(item,card,e.clientX,e.clientY);
-  });
+function attachDrag(card,item){
+  card.addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];startDrag(item,card,t.clientX,t.clientY);},{passive:false});
+  card.addEventListener('mousedown', e=>{e.preventDefault();startDrag(item,card,e.clientX,e.clientY);});
 }
-document.addEventListener('touchmove', e=>{
-  if(!dragItem) return;
-  e.preventDefault();
-  const t=e.touches[0]; moveGhost(t.clientX,t.clientY);
-},{passive:false});
-document.addEventListener('touchend', e=>{
-  if(!dragItem) return;
-  const t=e.changedTouches[0]; endDrag(t.clientX,t.clientY);
-});
-document.addEventListener('mousemove', e=>{
-  if(!dragItem) return;
-  moveGhost(e.clientX,e.clientY);
-});
-document.addEventListener('mouseup', e=>{
-  if(!dragItem) return;
-  endDrag(e.clientX,e.clientY);
-});
+document.addEventListener('touchmove',e=>{if(!dragItem)return;e.preventDefault();const t=e.touches[0];moveGhost(t.clientX,t.clientY);},{passive:false});
+document.addEventListener('touchend', e=>{if(!dragItem)return;const t=e.changedTouches[0];endDrag(t.clientX,t.clientY);});
+document.addEventListener('mousemove',e=>{if(!dragItem)return;moveGhost(e.clientX,e.clientY);});
+document.addEventListener('mouseup',  e=>{if(!dragItem)return;endDrag(e.clientX,e.clientY);});
 
-// ═══════════════════════════════════════════
-// 判定
-// ═══════════════════════════════════════════
+// ═══════════════ 判定 ═══════════════
 function checkResult(){
-  const aItems = getItemsIn('a');
-  const bItems = getItemsIn('b');
-  const bankItems = getItemsIn('bank');
+  if(getIn('bank').length > 0) return;       // まだ全部置いてない
+  const a=getIn('a'), b=getIn('b');
+  if(a.length===0 || b.length===0) return;   // 片方が空
 
-  // 全部配置済みかチェック
-  if(bankItems.length > 0) return;
-  if(aItems.length === 0 || bItems.length === 0) return;
+  const matched = RULES.filter(r=>r.check(a,b));
+  if(matched.length===0) return;             // どのルールにも合わない → 無反応
 
-  const matched = RULES.filter(r=> r.check(aItems, bItems));
-
-  if(matched.length > 0){
-    // 成功
-    const banner = document.getElementById('result-banner');
-    const labels = matched.map(r=>`<b>${r.labelA()}</b> と <b>${r.labelB()}</b>`).join('<br>');
-    banner.innerHTML=`<div class="banner-box">
-      <div class="banner-emoji">🎉</div>
-      <div class="banner-title">せいかい！</div>
-      <div class="banner-rules">${labels}</div>
-    </div>`;
-    banner.classList.add('show');
-    showCelebration();
-    playCelebration();
-    setTimeout(()=>{ banner.classList.remove('show'); banner.innerHTML=''; },3500);
-    // ラベルを表示
-    document.getElementById('label-a').textContent = matched[0].labelA();
-    document.getElementById('label-a').className   = 'zone-label revealed';
-    document.getElementById('label-b').textContent = matched[0].labelB();
-    document.getElementById('label-b').className   = 'zone-label revealed';
-  } else {
-    // 不正解
-    const banner = document.getElementById('result-banner');
-    banner.innerHTML=`<div class="banner-box">
-      <div class="banner-emoji">🤔</div>
-      <div class="banner-miss">もうすこし！<br>ちがうならべかたをためしてね</div>
-    </div>`;
-    banner.classList.add('show');
-    playNote(220,0.3,'sawtooth');
-    setTimeout(()=>{ banner.classList.remove('show'); banner.innerHTML=''; },1800);
-  }
+  // 成功！
+  const r = matched[0];
+  ['a','b'].forEach(z=>{
+    const el = document.getElementById(`label-${z}`);
+    el.textContent = z==='a' ? r.la : r.lb;
+    el.className = 'zone-label revealed';
+    document.getElementById(`zone-${z}`).classList.add('matched');
+  });
+  showCelebration();
+  playCelebration();
 }
 
-// ═══════════════════════════════════════════
-// お祝い
-// ═══════════════════════════════════════════
+// ═══════════════ お祝い ═══════════════
 function showCelebration(){
   const el=document.getElementById('celebration');
   el.innerHTML=''; el.classList.add('show');
-  const stars=['⭐','🌟','✨','💫','🎊','🎶','🌈','❤️'];
-  for(let i=0;i<18;i++){
+  const stars=['⭐','🌟','✨','💫','🎊','🎶','🌈','❤️','🎉','🦕','🐱'];
+  for(let i=0;i<22;i++){
     const s=document.createElement('div');
     s.className='star-burst'; s.textContent=stars[i%stars.length];
-    const a=(i/18)*360,d=130+Math.random()*90;
+    const a=(i/22)*360, d=150+Math.random()*120;
     s.style.setProperty('--tx',Math.round(Math.cos(a*Math.PI/180)*d)+'px');
     s.style.setProperty('--ty',Math.round(Math.sin(a*Math.PI/180)*d)+'px');
-    s.style.left='50%'; s.style.top='40%';
-    s.style.marginLeft='-20px'; s.style.marginTop='-20px';
-    s.style.animationDelay=(Math.random()*0.3)+'s';
+    s.style.left='50%'; s.style.top='45%';
+    s.style.marginLeft='-22px'; s.style.marginTop='-22px';
+    s.style.animationDelay=(Math.random()*0.4)+'s';
     el.appendChild(s);
   }
-  setTimeout(()=>{el.classList.remove('show');el.innerHTML='';},3000);
+  setTimeout(()=>{el.classList.remove('show');el.innerHTML='';},2500);
 }
 
-// ═══════════════════════════════════════════
-// リセット
-// ═══════════════════════════════════════════
-document.getElementById('reset-btn').addEventListener('click', ()=>{
+// ═══════════════ リセット ═══════════════
+document.getElementById('reset-btn').addEventListener('click',()=>{
+  resetLabels();
   generateItems();
   render();
   playNote(523.25,0.15);
 });
 
-// ── 起動 ──
 generateItems();
 render();
 </script>
