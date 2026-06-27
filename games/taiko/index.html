@@ -315,10 +315,12 @@
 
 <script>
 // ── iOS Safari double-tap zoom fix ────────────────────────
-// touch-action:manipulation alone is not enough on Safari;
-// preventDefault on touchstart is required.
-document.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
-document.addEventListener('touchend',   e => e.preventDefault(), { passive: false });
+// Apply only to drum/cymbal elements, not the whole page,
+// so the back button remains tappable.
+function noZoom(el) {
+  el.addEventListener('touchstart', e => e.preventDefault(), { passive: false });
+  el.addEventListener('touchend',   e => e.preventDefault(), { passive: false });
+}
 
 // ── Audio ─────────────────────────────────────────────────
 let _ctx = null;
@@ -433,9 +435,11 @@ function doHit(el, type, freq) {
 }
 
 document.querySelectorAll('.drum-wrap').forEach(el => {
+  noZoom(el);
   el.addEventListener('pointerdown', e => { e.preventDefault(); doHit(el, el.dataset.type, parseFloat(el.dataset.freq)); });
 });
 document.querySelectorAll('.cymbal-wrap').forEach(el => {
+  noZoom(el);
   el.addEventListener('pointerdown', e => { e.preventDefault(); doHit(el, 'cymbal', 0); });
 });
 </script>
