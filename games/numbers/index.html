@@ -134,6 +134,11 @@
       top: -40px;
       animation: confettiFall var(--dur2) ease-out forwards;
     }
+    @keyframes rainFall {
+      from { transform: translateY(0) rotate(var(--r, 0deg)); opacity: 1; }
+      80%  { opacity: 1; }
+      to   { transform: translateY(110vh) rotate(var(--r, 0deg)); opacity: 0; }
+    }
     @keyframes confettiFall {
       from { opacity: 1; transform: translate(0,0) rotate(0deg); }
       to   { opacity: 0; transform: translate(var(--dx), 100vh) rotate(var(--rot)); }
@@ -274,6 +279,43 @@ function spawnConfetti() {
 }
 
 showNumber(1);
+
+// ── 隠しコマンド: 3連続タップで動物の雨 ────────────────
+let tapCount = 0;
+let tapTimer = null;
+
+document.getElementById('stage').addEventListener('pointerdown', () => {
+  tapCount++;
+  clearTimeout(tapTimer);
+  if (tapCount >= 3) {
+    tapCount = 0;
+    animalRain();
+  } else {
+    tapTimer = setTimeout(() => { tapCount = 0; }, 600);
+  }
+});
+
+function animalRain() {
+  const count = 90 + Math.floor(Math.random() * 20); // 90〜109匹
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.textContent = POOL[Math.floor(Math.random() * POOL.length)];
+      el.style.cssText = `
+        position: fixed;
+        top: -60px;
+        left: ${Math.random() * 100}vw;
+        font-size: ${36 + Math.random() * 28}px;
+        pointer-events: none;
+        z-index: 200;
+        animation: rainFall ${1.8 + Math.random() * 2}s linear forwards;
+        transform: rotate(${Math.random() * 40 - 20}deg);
+      `;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 4500);
+    }, i * 35);
+  }
+}
 </script>
 </body>
 </html>
