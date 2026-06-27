@@ -18,7 +18,6 @@
       flex-direction: column;
     }
 
-    /* Back */
     #back-btn {
       position: fixed;
       top: 16px; left: 16px;
@@ -37,78 +36,55 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 70px 16px 16px;
-      gap: 12px;
+      justify-content: flex-start;
+      padding: 16px 16px 8px;
+      gap: 0;
       overflow: hidden;
     }
 
-    /* Big number */
+    /* Number */
     #big-number {
-      font-size: 110px;
+      font-size: 72px;
       font-weight: 900;
       line-height: 1;
       color: #FF6B35;
-      text-shadow: 4px 5px 0 #FFB347, 7px 7px 0 rgba(0,0,0,0.08);
-      min-height: 120px;
+      text-shadow: 3px 4px 0 #FFB347, 5px 5px 0 rgba(0,0,0,0.08);
+      min-height: 80px;
       display: flex;
       align-items: center;
       justify-content: center;
+      margin-top: 10px;
     }
     @keyframes numPop {
       0%  { transform: scale(0.5) rotate(-8deg); }
-      65% { transform: scale(1.18) rotate(3deg); }
+      65% { transform: scale(1.2) rotate(3deg); }
       100%{ transform: scale(1)   rotate(0deg); }
     }
     #big-number.pop { animation: numPop 0.35s cubic-bezier(0.34,1.56,0.64,1); }
 
-    /* Reading */
-    #reading {
-      font-size: 24px;
-      font-weight: bold;
-      color: #999;
-      letter-spacing: 0.08em;
-      min-height: 30px;
-    }
-
-    /* Animal parade runway */
-    #runway {
+    /* ── Runway ── */
+    #runway-wrap {
+      flex: 1;
       width: 100%;
-      max-width: 500px;
-      min-height: 110px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 6px;
-      padding: 8px;
       position: relative;
+      overflow: hidden;
     }
 
+    /* Each animal is absolutely positioned and animates across the full width */
     .animal {
-      font-size: 58px;
+      position: absolute;
+      font-size: 80px;
       line-height: 1;
-      display: inline-block;
-      animation: runIn var(--dur) cubic-bezier(0.22, 1, 0.36, 1) both;
+      /* vertical position set per item in JS */
+      /* horizontal animation: right-edge in → cross screen → left-edge out */
+      animation: march var(--speed) linear both;
       animation-delay: var(--delay);
+      white-space: nowrap;
     }
-    /* shrink when many */
-    .animal.sm { font-size: 44px; }
-    .animal.xs { font-size: 36px; }
 
-    @keyframes runIn {
-      from {
-        transform: translateX(160px) scaleX(-1);
-        opacity: 0;
-      }
-      70% {
-        transform: translateX(-8px) scaleX(-1);
-        opacity: 1;
-      }
-      to {
-        transform: translateX(0) scaleX(1);
-        opacity: 1;
-      }
+    @keyframes march {
+      from { transform: translateX(110vw); }
+      to   { transform: translateX(-15vw); }
     }
 
     /* ── Number strip ── */
@@ -170,8 +146,7 @@
 
 <div id="stage">
   <div id="big-number"></div>
-  <div id="reading"></div>
-  <div id="runway"></div>
+  <div id="runway-wrap"></div>
 </div>
 
 <div id="num-strip">
@@ -212,21 +187,14 @@ function playCelebration() {
     setTimeout(() => playNote(f, 0.38, 'triangle', 0.45), i * 110));
 }
 
-// ── Creature pool ────────────────────────────────────────
-// Dinos listed multiple times → higher frequency
+// ── Creature pool (dinos weighted 4×) ───────────────────
 const POOL = [
-  // 🦕🦖 dinos × 4 each
   '🦕','🦕','🦕','🦕',
   '🦖','🦖','🦖','🦖',
-  // reptiles / prehistoric feel
   '🐊','🦎','🐢',
-  // big animals
   '🐘','🦁','🐯','🐼','🦊','🐺','🦒','🦏','🦛',
-  // birds
   '🐧','🦅','🦜','🐦','🦆','🦢',
-  // bugs
   '🐛','🦋','🐝','🐞','🦗','🪲','🐜',
-  // sea / other
   '🐬','🦀','🦑',
 ];
 
@@ -234,52 +202,57 @@ function pickRandom() {
   return POOL[Math.floor(Math.random() * POOL.length)];
 }
 
-// ── Readings ─────────────────────────────────────────────
-const READINGS = ['いち','に','さん','し','ご','ろく','しち','はち','きゅう','じゅう'];
-
 // ── Main ─────────────────────────────────────────────────
 function showNumber(n) {
-  // Button highlight
   document.querySelectorAll('.num-btn').forEach(b =>
     b.classList.toggle('active', +b.dataset.n === n));
 
-  // Big number
+  // Number pop
   const numEl = document.getElementById('big-number');
   numEl.textContent = n;
   numEl.classList.remove('pop');
   void numEl.offsetWidth;
   numEl.classList.add('pop');
 
-  // Reading
-  document.getElementById('reading').textContent = READINGS[n - 1];
-
-  // Sound: nth scale note
+  // Sound
   playNote(SCALE[n - 1], 0.4);
 
-  // Pick ONE animal for this round
+  // One animal type for this run
   const animal = pickRandom();
 
-  // Size class
-  const sizeClass = n >= 9 ? 'xs' : n >= 6 ? 'sm' : '';
+  // Layout: divide runway height into rows based on count
+  const wrap = document.getElementById('runway-wrap');
+  wrap.innerHTML = '';
 
-  // Build runway
-  const runway = document.getElementById('runway');
-  runway.innerHTML = '';
+  const wrapH = wrap.clientHeight || 300;
+
+  // Place each animal on a horizontal "lane"
+  // For n items, divide the height into n lanes, one animal per lane
+  // Stagger delay so they march in one after another from the right
+  const MARCH_DURATION = 2.2; // seconds to cross screen
+  const STAGGER = 0.35;       // seconds between each animal
+
   for (let i = 0; i < n; i++) {
     const span = document.createElement('span');
-    span.className = 'animal' + (sizeClass ? ' ' + sizeClass : '');
+    span.className = 'animal';
     span.textContent = animal;
-    // stagger each one arriving from the right
-    const delay = i * 90;
-    span.style.setProperty('--delay', delay + 'ms');
-    span.style.setProperty('--dur', '0.55s');
-    runway.appendChild(span);
+
+    // vertical: evenly distribute across runway height
+    const laneH = wrapH / n;
+    const top = laneH * i + laneH * 0.5 - 50; // center in lane (emoji ~80px)
+    span.style.top = Math.max(0, top) + 'px';
+
+    span.style.setProperty('--delay', (i * STAGGER) + 's');
+    span.style.setProperty('--speed', MARCH_DURATION + 's');
+
+    wrap.appendChild(span);
   }
 
-  // Celebration on 10
+  // 10 → celebrate after all have entered
   if (n === 10) {
-    setTimeout(playCelebration, n * 90 + 100);
-    setTimeout(spawnConfetti, n * 90 + 200);
+    const celebDelay = (n * STAGGER + 0.5) * 1000;
+    setTimeout(playCelebration, celebDelay);
+    setTimeout(spawnConfetti, celebDelay + 100);
   }
 }
 
@@ -300,7 +273,6 @@ function spawnConfetti() {
   }
 }
 
-// Start
 showNumber(1);
 </script>
 </body>
