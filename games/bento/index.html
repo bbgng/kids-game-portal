@@ -6,386 +6,385 @@
   <title>おべんとうをつくろう</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      background: linear-gradient(160deg, #fff8e1 0%, #ffe0b2 100%);
+      background: linear-gradient(160deg, #fffde7 0%, #fff3e0 100%);
       min-height: 100vh; min-height: 100dvh;
       display: flex; flex-direction: column; align-items: center;
-      padding: 56px 16px 32px;
+      padding: 56px 12px 28px;
       font-family: "Hiragino Maru Gothic ProN", "Rounded Mplus 1c", sans-serif;
       touch-action: manipulation;
       user-select: none; -webkit-user-select: none;
-      overflow-x: hidden;
     }
-
     #back-btn {
       position: fixed; top: 14px; left: 14px;
-      background: rgba(0,0,0,0.1); border: 2px solid rgba(0,0,0,0.15);
-      color: #555; border-radius: 20px; padding: 7px 16px; font-size: 0.8rem;
-      text-decoration: none; z-index: 10; touch-action: manipulation;
+      background: rgba(0,0,0,0.08); border: 2px solid rgba(0,0,0,0.12);
+      color: #555; border-radius: 20px; padding: 7px 14px; font-size: 0.78rem;
+      text-decoration: none; z-index: 10;
     }
 
-    /* ステッププログレス */
-    #progress {
-      display: flex; gap: 8px; margin-bottom: 20px;
+    /* ── ステップドット ── */
+    #progress { display: flex; gap: 10px; margin-bottom: 18px; }
+    .dot {
+      width: 13px; height: 13px; border-radius: 50%;
+      background: rgba(0,0,0,0.15); transition: all 0.3s;
     }
-    .step-dot {
-      width: 12px; height: 12px; border-radius: 50%;
-      background: rgba(0,0,0,0.15);
-      transition: background 0.3s, transform 0.3s;
-    }
-    .step-dot.done   { background: #ff7043; }
-    .step-dot.active { background: #ff7043; transform: scale(1.4); }
+    .dot.done   { background: #e64a19; }
+    .dot.active { background: #e64a19; transform: scale(1.5); }
 
-    /* お弁当箱 */
-    #bento-box {
-      width: 100%; max-width: 380px;
-      background: #f44336;
-      border-radius: 20px;
-      padding: 10px;
-      box-shadow: 0 6px 0 #b71c1c, 0 8px 20px rgba(0,0,0,0.2);
-      margin-bottom: 24px;
+    /* ── 弁当箱SVG ── */
+    #bento-wrap {
+      width: 100%; max-width: 400px;
+      margin-bottom: 22px;
     }
-    #bento-inner {
-      background: #fff9c4;
-      border-radius: 12px;
-      padding: 10px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto;
-      gap: 8px;
-      min-height: 140px;
-    }
+    #bento-wrap svg { width: 100%; height: auto; }
 
-    .bento-slot {
-      background: rgba(255,255,255,0.6);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 3rem;
-      min-height: 60px;
-      transition: all 0.3s;
-      position: relative;
+    /* 食材テキスト（SVG foreignObject の中身） */
+    .cell-content {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2px;
     }
-    /* 主食は2列分 */
-    .bento-slot.wide { grid-column: 1 / -1; font-size: 2.4rem; }
+    .cell-emoji { font-size: 2.6rem; line-height: 1; }
+    .cell-name  { font-size: 0.72rem; color: #555; font-weight: bold;
+                  font-family: "Hiragino Maru Gothic ProN", sans-serif; }
 
-    .bento-slot.empty { opacity: 0.3; }
-    .bento-slot .slot-label {
-      position: absolute; bottom: 4px; right: 6px;
-      font-size: 0.6rem; color: #999;
-    }
-    .bento-slot.filled { animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-    @keyframes popIn {
-      0%   { transform: scale(0); }
-      100% { transform: scale(1); }
-    }
-
-    /* 飲み物スロット（箱の外） */
-    #drink-slot {
-      align-self: flex-end;
-      margin-top: -4px;
-      background: rgba(255,255,255,0.6);
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 2rem;
-      width: 60px; height: 60px;
-      position: absolute;
-      right: 10px; bottom: 10px;
-      transition: all 0.3s;
-    }
-
-    /* 選択エリア */
-    #select-area { width: 100%; max-width: 420px; }
-
+    /* ── 選択エリア ── */
+    #select-area { width: 100%; max-width: 400px; }
     #category-title {
-      font-size: 1.4rem; font-weight: bold; color: #e65100;
-      text-align: center; margin-bottom: 16px;
+      font-size: 1.3rem; font-weight: bold; color: #e64a19;
+      text-align: center; margin-bottom: 14px;
     }
-
-    #choices {
-      display: flex; flex-direction: column; gap: 12px;
-    }
-
+    #choices { display: flex; flex-direction: column; gap: 10px; }
     .choice-btn {
       background: #fff;
-      border: 3px solid #ffe0b2;
-      border-radius: 20px;
-      padding: 16px 20px;
-      display: flex; align-items: center; gap: 16px;
-      cursor: pointer;
-      touch-action: manipulation; -webkit-tap-highlight-color: transparent;
-      box-shadow: 0 4px 0 #ffe0b2;
+      border: 3px solid #ffe082;
+      border-radius: 18px;
+      padding: 14px 18px;
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer; touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      box-shadow: 0 4px 0 #ffc107;
       transition: transform 0.1s, box-shadow 0.1s;
-      font-size: 1.1rem; color: #333; font-weight: bold;
-      font-family: inherit;
+      font-family: inherit; text-align: left;
     }
-    .choice-btn:active {
-      transform: translateY(3px); box-shadow: 0 1px 0 #ffe0b2;
-    }
-    .choice-btn .choice-icon { font-size: 2.4rem; line-height: 1; flex-shrink: 0; }
-    .choice-btn .choice-desc { font-size: 0.8rem; color: #aaa; font-weight: normal; margin-top: 2px; }
+    .choice-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #ffc107; }
+    .choice-icon { font-size: 2.6rem; flex-shrink: 0; line-height: 1; }
+    .choice-name { font-size: 1.1rem; font-weight: bold; color: #333; }
+    .choice-desc { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
 
-    /* 完成画面 */
+    /* ── 完成画面 ── */
     #finish-screen {
-      display: none;
-      flex-direction: column; align-items: center; gap: 20px;
-      width: 100%; max-width: 380px;
+      display: none; flex-direction: column; align-items: center; gap: 18px;
+      width: 100%; max-width: 400px;
     }
     #finish-screen.show { display: flex; }
     #select-area.hidden { display: none; }
-
     #finish-title {
-      font-size: 1.8rem; font-weight: bold; color: #e65100;
-      text-align: center;
+      font-size: 1.7rem; font-weight: bold; color: #e64a19;
       animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);
     }
+    @keyframes popIn { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
     #menu-list {
-      background: rgba(255,255,255,0.7);
-      border-radius: 16px;
-      padding: 16px 20px;
-      width: 100%;
+      background: rgba(255,255,255,0.85); border-radius: 16px;
+      padding: 14px 18px; width: 100%;
       display: flex; flex-direction: column; gap: 10px;
-      animation: slideUp 0.4s ease;
     }
-    @keyframes slideUp {
-      0%   { opacity: 0; transform: translateY(20px); }
-      100% { opacity: 1; transform: translateY(0); }
-    }
-    .menu-row { display: flex; align-items: center; gap: 12px; font-size: 1rem; color: #555; }
-    .menu-row .menu-icon { font-size: 1.8rem; }
-    .menu-row .menu-cat  { font-size: 0.75rem; color: #aaa; }
-
+    .menu-row { display: flex; align-items: center; gap: 10px; }
+    .menu-row .mr-icon { font-size: 1.8rem; }
+    .menu-row .mr-name { font-size: 1rem; font-weight: bold; color: #333; }
+    .menu-row .mr-cat  { font-size: 0.72rem; color: #aaa; }
     #restart-btn {
-      background: #ff7043; color: #fff;
+      background: #e64a19; color: #fff;
       border: none; border-radius: 50px;
-      padding: 16px 40px; font-size: 1.2rem; font-weight: bold;
+      padding: 15px 36px; font-size: 1.15rem; font-weight: bold;
       cursor: pointer; touch-action: manipulation;
-      box-shadow: 0 5px 0 #bf360c;
+      box-shadow: 0 5px 0 #bf360c; font-family: inherit;
       transition: transform 0.1s, box-shadow 0.1s;
-      font-family: inherit;
     }
     #restart-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #bf360c; }
 
-    /* お祝い */
+    /* ── お祝い ── */
     #celebration {
-      position: fixed; inset: 0;
-      display: none; align-items: center; justify-content: center;
+      position: fixed; inset: 0; display: none;
+      align-items: center; justify-content: center;
       z-index: 30; pointer-events: none;
     }
     #celebration.show { display: flex; }
-    .star-burst { position: absolute; font-size: 2.4rem; animation: starFloat 1.6s ease-out forwards; }
-    @keyframes starFloat {
-      0%   { opacity: 1; transform: translate(0,0) scale(1); }
-      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0.3); }
+    .star-burst {
+      position: absolute; font-size: 2.4rem;
+      animation: sf 1.6s ease-out forwards;
+    }
+    @keyframes sf {
+      0%  { opacity:1; transform:translate(0,0) scale(1); }
+      100%{ opacity:0; transform:translate(var(--tx),var(--ty)) scale(0.3); }
     }
   </style>
 </head>
 <body>
 
-  <a id="back-btn" href="../../index.html">← もどる</a>
+<a id="back-btn" href="../../index.html">← もどる</a>
+<div id="progress"></div>
 
-  <div id="progress"></div>
+<!-- 弁当箱 SVG -->
+<div id="bento-wrap">
+  <svg id="bento-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
 
-  <!-- お弁当箱 -->
-  <div id="bento-box">
-    <div id="bento-inner">
-      <div class="bento-slot wide empty" id="slot-main"><span class="slot-label">しゅしょく</span></div>
-      <div class="bento-slot empty"      id="slot-side1"><span class="slot-label">しゅさい</span></div>
-      <div class="bento-slot empty"      id="slot-side2"><span class="slot-label">ふくさい</span></div>
-    </div>
+    <!-- ふた（蓋） -->
+    <rect x="10" y="2" width="340" height="28" rx="10" fill="#c62828"/>
+    <rect x="10" y="2" width="340" height="28" rx="10" fill="none" stroke="#b71c1c" stroke-width="3"/>
+    <!-- ふたのつまみ -->
+    <rect x="155" y="0" width="50" height="10" rx="5" fill="#ef9a9a"/>
+
+    <!-- 箱本体 -->
+    <rect x="10" y="30" width="340" height="182" rx="12" fill="#fff9e6"/>
+    <rect x="10" y="30" width="340" height="182" rx="12" fill="none" stroke="#c62828" stroke-width="5"/>
+
+    <!-- 仕切り縦（右1/3） -->
+    <line x1="250" y1="35" x2="250" y2="208" stroke="#e57373" stroke-width="3"/>
+    <!-- 仕切り横（右ブロック） -->
+    <line x1="250" y1="120" x2="350" y2="120" stroke="#e57373" stroke-width="3"/>
+
+    <!-- セル1: 主食（左大） -->
+    <foreignObject id="fo-main" x="14" y="34" width="230" height="172">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content" id="cell-main">
+        <span style="font-size:2rem;opacity:0.2">🍱</span>
+        <span style="font-size:0.7rem;color:#ccc;font-family:sans-serif">しゅしょく</span>
+      </div>
+    </foreignObject>
+
+    <!-- セル2: 主菜（右上） -->
+    <foreignObject id="fo-side1" x="253" y="34" width="100" height="82">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content" id="cell-side1">
+        <span style="font-size:1.4rem;opacity:0.2">🍽️</span>
+        <span style="font-size:0.6rem;color:#ccc;font-family:sans-serif">しゅさい</span>
+      </div>
+    </foreignObject>
+
+    <!-- セル3: 副菜（右中） -->
+    <foreignObject id="fo-side2" x="253" y="122" width="100" height="82">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content" id="cell-side2">
+        <span style="font-size:1.4rem;opacity:0.2">🥗</span>
+        <span style="font-size:0.6rem;color:#ccc;font-family:sans-serif">ふくさい</span>
+      </div>
+    </foreignObject>
+
+    <!-- 影 -->
+    <ellipse cx="185" cy="215" rx="160" ry="8" fill="rgba(0,0,0,0.1)"/>
+  </svg>
+</div>
+
+<!-- 飲み物ボトル（箱の外） -->
+<div id="drink-display" style="
+  position:relative; width:100%; max-width:400px; height:0; z-index:5;
+">
+  <div id="cell-drink" style="
+    position:absolute; right:4px; top:-210px;
+    width:56px; height:56px;
+    background:#e3f2fd; border-radius:50%;
+    border:3px dashed #90caf9;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-size:0.6rem; color:#90caf9; gap:2px;
+  ">
+    <span style="font-size:1.2rem">🧃</span>
+    <span style="font-size:0.55rem;font-family:sans-serif">のみもの</span>
   </div>
-  <!-- 飲み物（箱の外） -->
-  <div style="position:relative;width:100%;max-width:380px;height:0;">
-    <div id="slot-drink" class="bento-slot empty" style="position:absolute;right:0;top:-70px;width:60px;height:60px;font-size:2rem;background:rgba(255,255,255,0.8);border-radius:10px;z-index:5;">
-      <span class="slot-label" style="position:absolute;bottom:2px;right:3px;font-size:0.55rem;color:#999;">のみもの</span>
-    </div>
-  </div>
+</div>
 
-  <!-- 選択エリア -->
-  <div id="select-area">
-    <div id="category-title"></div>
-    <div id="choices"></div>
-  </div>
+<!-- 選択エリア -->
+<div id="select-area">
+  <div id="category-title"></div>
+  <div id="choices"></div>
+</div>
 
-  <!-- 完成画面 -->
-  <div id="finish-screen">
-    <div id="finish-title">🍱 できあがり！</div>
-    <div id="menu-list"></div>
-    <button id="restart-btn">もういちどつくる 🍱</button>
-  </div>
+<!-- 完成画面 -->
+<div id="finish-screen">
+  <div id="finish-title">🍱 できあがり！</div>
+  <div id="menu-list"></div>
+  <button id="restart-btn">もういちどつくる 🍱</button>
+</div>
 
-  <div id="celebration"></div>
+<div id="celebration"></div>
 
-  <script src="../../shared/audio.js"></script>
-  <script>
-    const STEPS = [
-      {
-        category: '🍱 しゅしょくをえらぼう',
-        slot: 'slot-main',
-        choices: [
-          { icon: '🍙', name: 'おにぎり',       desc: 'ぱりぱりのり' },
-          { icon: '🍚', name: 'ふりかけごはん', desc: 'カラフルごはん' },
-          { icon: '🍜', name: 'やきそば',       desc: 'もちもち麺' },
-        ],
-      },
-      {
-        category: '🍗 しゅさいをえらぼう',
-        slot: 'slot-side1',
-        choices: [
-          { icon: '🍗', name: 'からあげ',     desc: 'じゅわっとジューシー' },
-          { icon: '🥚', name: 'たまごやき',   desc: 'あまくてふわふわ' },
-          { icon: '🍖', name: 'ハンバーグ',   desc: 'デミグラスソース' },
-        ],
-      },
-      {
-        category: '🥦 ふくさいをえらぼう',
-        slot: 'slot-side2',
-        choices: [
-          { icon: '🥦', name: 'ブロッコリー', desc: 'もりもり元気' },
-          { icon: '🍅', name: 'ミニトマト',   desc: 'あかくてかわいい' },
-          { icon: '🌽', name: 'コーン',       desc: 'あまあまプチプチ' },
-        ],
-      },
-      {
-        category: '🧃 のみものをえらぼう',
-        slot: 'slot-drink',
-        choices: [
-          { icon: '🍵', name: 'おちゃ',           desc: 'ほっとひとやすみ' },
-          { icon: '🧃', name: 'オレンジジュース', desc: 'さわやかすっきり' },
-          { icon: '🥛', name: 'ぎゅうにゅう',     desc: 'こくてまろやか' },
-        ],
-      },
-    ];
+<script src="../../shared/audio.js"></script>
+<script>
+const STEPS = [
+  {
+    category: '🍙 しゅしょくをえらぼう',
+    cellId: 'cell-main',
+    bigEmoji: true,
+    choices: [
+      { icon:'🍙', name:'おにぎり',       desc:'ぱりぱりのり' },
+      { icon:'🍚', name:'ふりかけごはん', desc:'カラフルごはん' },
+      { icon:'🍜', name:'やきそば',       desc:'もちもち麺' },
+    ],
+  },
+  {
+    category: '🍗 しゅさいをえらぼう',
+    cellId: 'cell-side1',
+    choices: [
+      { icon:'🍗', name:'からあげ',   desc:'ジューシー' },
+      { icon:'🥚', name:'たまごやき', desc:'ふわふわ' },
+      { icon:'🍖', name:'ハンバーグ', desc:'デミグラス' },
+    ],
+  },
+  {
+    category: '🥦 ふくさいをえらぼう',
+    cellId: 'cell-side2',
+    choices: [
+      { icon:'🥦', name:'ブロッコリー', desc:'もりもり元気' },
+      { icon:'🍅', name:'ミニトマト',   desc:'あかくてかわいい' },
+      { icon:'🌽', name:'コーン',       desc:'プチプチあまい' },
+    ],
+  },
+  {
+    category: '🧃 のみものをえらぼう',
+    cellId: 'cell-drink',
+    choices: [
+      { icon:'🍵', name:'おちゃ',         desc:'ほっとひとやすみ' },
+      { icon:'🧃', name:'ジュース',        desc:'さわやか' },
+      { icon:'🥛', name:'ぎゅうにゅう',   desc:'こくてまろやか' },
+    ],
+  },
+];
 
-    let stepIdx  = 0;
-    let selected = [];
+let stepIdx = 0, selected = [];
 
-    // プログレスドット生成
-    const progressEl = document.getElementById('progress');
-    STEPS.forEach((_, i) => {
-      const dot = document.createElement('div');
-      dot.className = 'step-dot';
-      dot.id = `dot-${i}`;
-      progressEl.appendChild(dot);
+// ドット生成
+const progEl = document.getElementById('progress');
+STEPS.forEach((_,i)=>{
+  const d = document.createElement('div');
+  d.className = 'dot'; d.id = `dot-${i}`;
+  progEl.appendChild(d);
+});
+
+function updateDots(){
+  STEPS.forEach((_,i)=>{
+    const d = document.getElementById(`dot-${i}`);
+    d.className = 'dot'+(i<stepIdx?' done':i===stepIdx?' active':'');
+  });
+}
+
+function renderStep(){
+  updateDots();
+  const step = STEPS[stepIdx];
+  document.getElementById('category-title').textContent = step.category;
+  const ch = document.getElementById('choices');
+  ch.innerHTML = '';
+  step.choices.forEach(c=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-icon">${c.icon}</span>
+      <div><div class="choice-name">${c.name}</div><div class="choice-desc">${c.desc}</div></div>`;
+    const fn = e=>{ e.preventDefault(); pick(c); };
+    btn.addEventListener('touchstart', fn, {passive:false});
+    btn.addEventListener('mousedown', fn);
+    ch.appendChild(btn);
+  });
+}
+
+function pick(choice){
+  selected.push(choice);
+  const step = STEPS[stepIdx];
+  const cell = document.getElementById(step.cellId);
+
+  // セルを更新
+  if(step.cellId === 'cell-drink'){
+    cell.innerHTML = `<span style="font-size:2rem">${choice.icon}</span><span style="font-size:0.65rem;font-family:sans-serif;color:#555">${choice.name}</span>`;
+    cell.style.background = '#fff9c4';
+    cell.style.borderColor = '#ffc107';
+    cell.style.color = '#555';
+  } else {
+    const big = step.bigEmoji;
+    cell.innerHTML = `<div class="cell-content">
+      <span class="${big?'cell-emoji':''}">
+        ${big ? choice.icon : '<span style="font-size:2rem">'+choice.icon+'</span>'}
+      </span>
+      <span class="cell-name">${choice.name}</span>
+    </div>`;
+    if(!big) cell.innerHTML = `<div class="cell-content">
+      <span style="font-size:2rem">${choice.icon}</span>
+      <span class="cell-name">${choice.name}</span>
+    </div>`;
+  }
+
+  // pop アニメ
+  cell.style.animation = 'none';
+  cell.offsetHeight;
+  cell.style.animation = 'popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+
+  const notes = [523.25,587.33,659.25,783.99];
+  playNote(notes[stepIdx], 0.25);
+  stepIdx++;
+  if(stepIdx >= STEPS.length) showFinish();
+  else renderStep();
+}
+
+function showFinish(){
+  document.getElementById('select-area').classList.add('hidden');
+  updateDots();
+  setTimeout(()=>{
+    const fs = document.getElementById('finish-screen');
+    fs.classList.add('show');
+    const ml = document.getElementById('menu-list');
+    ml.innerHTML = '';
+    const cats = ['しゅしょく','しゅさい','ふくさい','のみもの'];
+    selected.forEach((s,i)=>{
+      const r = document.createElement('div');
+      r.className = 'menu-row';
+      r.innerHTML = `<span class="mr-icon">${s.icon}</span>
+        <div><div class="mr-name">${s.name}</div><div class="mr-cat">${cats[i]}</div></div>`;
+      ml.appendChild(r);
     });
+    showCelebration();
+    playCelebration();
+  }, 300);
+  document.getElementById('restart-btn').addEventListener('click', restart);
+}
 
-    function updateProgress() {
-      STEPS.forEach((_, i) => {
-        const dot = document.getElementById(`dot-${i}`);
-        dot.className = 'step-dot' + (i < stepIdx ? ' done' : i === stepIdx ? ' active' : '');
-      });
-    }
+function restart(){
+  stepIdx = 0; selected = [];
+  // セルリセット
+  const defaults = [
+    ['cell-main',  '2rem',   '🍱', 'しゅしょく'],
+    ['cell-side1', '1.4rem', '🍽️', 'しゅさい'],
+    ['cell-side2', '1.4rem', '🥗', 'ふくさい'],
+  ];
+  defaults.forEach(([id,sz,ic,lb])=>{
+    document.getElementById(id).innerHTML =
+      `<div class="cell-content"><span style="font-size:${sz};opacity:0.2">${ic}</span>
+       <span style="font-size:0.7rem;color:#ccc;font-family:sans-serif">${lb}</span></div>`;
+  });
+  const dr = document.getElementById('cell-drink');
+  dr.innerHTML = `<span style="font-size:1.2rem">🧃</span><span style="font-size:0.55rem;font-family:sans-serif">のみもの</span>`;
+  dr.style.background = '#e3f2fd';
+  dr.style.borderColor = '#90caf9';
 
-    function renderStep() {
-      updateProgress();
-      const step = STEPS[stepIdx];
-      document.getElementById('category-title').textContent = step.category;
-      const choicesEl = document.getElementById('choices');
-      choicesEl.innerHTML = '';
-      step.choices.forEach(choice => {
-        const btn = document.createElement('button');
-        btn.className = 'choice-btn';
-        btn.innerHTML = `<span class="choice-icon">${choice.icon}</span><div><div>${choice.name}</div><div class="choice-desc">${choice.desc}</div></div>`;
-        const onTap = (e) => { e.preventDefault(); pick(choice); };
-        btn.addEventListener('touchstart', onTap, { passive: false });
-        btn.addEventListener('mousedown',  onTap);
-        choicesEl.appendChild(btn);
-      });
-    }
+  document.getElementById('finish-screen').classList.remove('show');
+  document.getElementById('select-area').classList.remove('hidden');
+  renderStep();
+}
 
-    function pick(choice) {
-      selected.push(choice);
+function showCelebration(){
+  const el = document.getElementById('celebration');
+  el.innerHTML = ''; el.classList.add('show');
+  const stars = ['⭐','🌟','✨','💫','🎊','🍱','🌈','❤️'];
+  for(let i=0;i<20;i++){
+    const s = document.createElement('div');
+    s.className = 'star-burst';
+    s.textContent = stars[i%stars.length];
+    const a=(i/20)*360, d=140+Math.random()*100;
+    s.style.setProperty('--tx', Math.round(Math.cos(a*Math.PI/180)*d)+'px');
+    s.style.setProperty('--ty', Math.round(Math.sin(a*Math.PI/180)*d)+'px');
+    s.style.left='50%'; s.style.top='40%';
+    s.style.marginLeft='-20px'; s.style.marginTop='-20px';
+    s.style.animationDelay=(Math.random()*0.3)+'s';
+    el.appendChild(s);
+  }
+  setTimeout(()=>{ el.classList.remove('show'); el.innerHTML=''; }, 3000);
+}
 
-      // スロットに配置
-      const slot = document.getElementById(STEPS[stepIdx].slot);
-      slot.innerHTML = choice.icon;
-      slot.classList.remove('empty');
-      slot.classList.add('filled');
-      setTimeout(() => slot.classList.remove('filled'), 500);
-
-      // 音
-      const notes = [523.25, 587.33, 659.25, 698.46];
-      playNote(notes[stepIdx], 0.25);
-
-      stepIdx++;
-
-      if (stepIdx >= STEPS.length) {
-        showFinish();
-      } else {
-        renderStep();
-      }
-    }
-
-    function showFinish() {
-      document.getElementById('select-area').classList.add('hidden');
-      updateProgress();
-
-      setTimeout(() => {
-        const finishEl = document.getElementById('finish-screen');
-        finishEl.classList.add('show');
-
-        const menuList = document.getElementById('menu-list');
-        menuList.innerHTML = '';
-        const cats = ['しゅしょく','しゅさい','ふくさい','のみもの'];
-        selected.forEach((s, i) => {
-          const row = document.createElement('div');
-          row.className = 'menu-row';
-          row.innerHTML = `<span class="menu-icon">${s.icon}</span><div><div>${s.name}</div><div class="menu-cat">${cats[i]}</div></div>`;
-          menuList.appendChild(row);
-        });
-
-        showCelebration();
-        playCelebration();
-      }, 400);
-
-      document.getElementById('restart-btn').addEventListener('click', restart);
-    }
-
-    function restart() {
-      stepIdx  = 0;
-      selected = [];
-
-      // スロットリセット
-      ['slot-main','slot-side1','slot-side2','slot-drink'].forEach(id => {
-        const el = document.getElementById(id);
-        el.innerHTML = '';
-        el.classList.add('empty');
-        el.classList.remove('filled');
-        // ラベルを戻す
-        const labels = { 'slot-main':'しゅしょく','slot-side1':'しゅさい','slot-side2':'ふくさい','slot-drink':'のみもの' };
-        const lbl = document.createElement('span');
-        lbl.className = 'slot-label';
-        lbl.style.cssText = id === 'slot-drink' ? 'position:absolute;bottom:2px;right:3px;font-size:0.55rem;color:#999;' : '';
-        lbl.textContent = labels[id];
-        el.appendChild(lbl);
-      });
-
-      document.getElementById('finish-screen').classList.remove('show');
-      document.getElementById('select-area').classList.remove('hidden');
-      renderStep();
-    }
-
-    function showCelebration() {
-      const celebEl = document.getElementById('celebration');
-      celebEl.innerHTML = '';
-      celebEl.classList.add('show');
-      const stars = ['⭐','🌟','✨','💫','🎊','🍱','🌈','❤️'];
-      for (let i = 0; i < 20; i++) {
-        const s = document.createElement('div');
-        s.className = 'star-burst';
-        s.textContent = stars[i % stars.length];
-        const angle = (i / 20) * 360, dist = 140 + Math.random() * 100;
-        s.style.setProperty('--tx', Math.round(Math.cos(angle * Math.PI / 180) * dist) + 'px');
-        s.style.setProperty('--ty', Math.round(Math.sin(angle * Math.PI / 180) * dist) + 'px');
-        s.style.left = '50%'; s.style.top = '40%';
-        s.style.marginLeft = '-20px'; s.style.marginTop = '-20px';
-        s.style.animationDelay = (Math.random() * 0.3) + 's';
-        celebEl.appendChild(s);
-      }
-      setTimeout(() => { celebEl.classList.remove('show'); celebEl.innerHTML = ''; }, 3000);
-    }
-
-    renderStep();
-  </script>
+renderStep();
+</script>
 </body>
 </html>
