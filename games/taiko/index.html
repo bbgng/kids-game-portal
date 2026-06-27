@@ -6,9 +6,10 @@
   <title>たいこあそび</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { touch-action: manipulation; }
     body {
       font-family: 'Helvetica Neue', sans-serif;
-      background: linear-gradient(160deg, #1a0a00 0%, #3a1200 60%, #1a0a00 100%);
+      background: radial-gradient(ellipse at center, #2a0e00 0%, #0d0500 100%);
       height: 100dvh;
       overflow: hidden;
       user-select: none;
@@ -22,220 +23,374 @@
 
     #back-btn {
       position: fixed;
-      top: 16px; left: 16px;
-      z-index: 20;
-      background: rgba(255,255,255,0.15);
+      top: 16px; left: 16px; z-index: 30;
+      background: rgba(255,255,255,0.12);
       border: none; border-radius: 50%;
       width: 46px; height: 46px;
-      font-size: 20px; cursor: pointer;
-      color: white;
+      font-size: 20px; cursor: pointer; color: white;
       display: flex; align-items: center; justify-content: center;
+      touch-action: manipulation;
     }
 
-    /* Title */
     #title {
       color: #FFD580;
-      font-size: 22px;
+      font-size: 20px;
       font-weight: bold;
       letter-spacing: 0.2em;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       text-shadow: 0 0 20px rgba(255,180,50,0.5);
     }
 
-    /* Drum stage */
+    /* ── Grid layout ── */
     #drum-stage {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 28px;
-      padding: 0 16px;
+      display: grid;
+      grid-template-columns: repeat(3, auto);
+      grid-template-rows: auto auto;
+      gap: 12px 20px;
+      align-items: end;
+      justify-items: center;
     }
 
-    /* ── Drum component ── */
+    /* ── Drum wrapper ── */
     .drum-wrap {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0;
       cursor: pointer;
+      touch-action: manipulation;
       -webkit-tap-highlight-color: transparent;
-      position: relative;
     }
 
-    /* Drum body (SVG-drawn) */
     .drum-svg {
       display: block;
-      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.6));
       transition: transform 0.06s;
-      transform-origin: center bottom;
+      transform-origin: center 70%;
+      filter: drop-shadow(0 6px 16px rgba(0,0,0,0.7));
     }
-    .drum-wrap:active .drum-svg,
     .drum-wrap.hit .drum-svg {
-      transform: scaleY(0.88) scaleX(1.04);
+      transform: scaleY(0.87) scaleX(1.05);
     }
 
-    /* Stand legs */
+    /* Stand */
     .drum-stand {
-      width: 60%;
-      height: 18px;
-      background: linear-gradient(180deg, #8B5E2A, #5A3A10);
-      border-radius: 0 0 8px 8px;
+      background: linear-gradient(180deg, #7A5020, #3A2008);
+      border-radius: 0 0 6px 6px;
+      margin-top: -1px;
+      width: 50%; height: 14px;
+    }
+
+    /* ── Bachi (drumstick) ── */
+    .bachi-wrap {
+      position: absolute;
+      top: -8px;
+      right: -6px;
+      z-index: 10;
+      pointer-events: none;
+      transform-origin: 50% 8px; /* pivot near top of stick */
+      transform: rotate(-52deg);
+      transition: transform 0.1s cubic-bezier(0.22,1,0.36,1);
+    }
+    .drum-wrap.hit .bachi-wrap {
+      transform: rotate(-12deg);
+      transition: transform 0.045s ease-out;
+    }
+
+    /* ── Cymbal wrap ── */
+    .cymbal-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .cymbal-svg {
+      display: block;
+      filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+      transition: transform 0.06s;
+      transform-origin: center center;
+    }
+    @keyframes cymbalWobble {
+      0%   { transform: rotate(0deg) scaleX(1); }
+      20%  { transform: rotate(-3deg) scaleX(0.96); }
+      50%  { transform: rotate(2deg) scaleX(1.03); }
+      75%  { transform: rotate(-1deg) scaleX(0.99); }
+      100% { transform: rotate(0deg) scaleX(1); }
+    }
+    .cymbal-wrap.hit .cymbal-svg {
+      animation: cymbalWobble 0.5s ease-out;
+    }
+    .cymbal-stand-post {
+      width: 6px; height: 20px;
+      background: linear-gradient(180deg, #AAA, #666);
+      border-radius: 3px;
       margin-top: -2px;
     }
+    .cymbal-base {
+      width: 24px; height: 8px;
+      background: linear-gradient(180deg, #888, #444);
+      border-radius: 4px;
+    }
+    .cymbal-wrap .bachi-wrap {
+      position: absolute;
+      top: -10px; right: -8px;
+    }
 
-    /* Hit ripple */
+    /* ── Ripple ── */
     .ripple {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 20px;
-      height: 20px;
       border-radius: 50%;
-      background: rgba(255,220,100,0.5);
-      transform: translate(-50%, -50%) scale(0);
+      background: rgba(255,220,100,0.45);
+      transform: scale(0);
       pointer-events: none;
       animation: rippleOut 0.5s ease-out forwards;
+      top: 35%; left: 50%;
+      width: 16px; height: 16px;
+      margin-left: -8px; margin-top: -8px;
     }
     @keyframes rippleOut {
-      to { transform: translate(-50%, -50%) scale(8); opacity: 0; }
+      to { transform: scale(10); opacity: 0; }
     }
+    .cymbal-wrap .ripple { top: 50%; }
 
-    /* Hit notes floating up */
+    /* ── Floating text ── */
     .hit-note {
       position: fixed;
-      font-size: 28px;
+      font-size: 24px;
+      font-weight: bold;
       pointer-events: none;
       z-index: 50;
-      animation: floatNote 0.9s ease-out forwards;
+      animation: floatNote 0.85s ease-out forwards;
     }
     @keyframes floatNote {
       from { opacity: 1; transform: translateY(0) scale(1); }
-      to   { opacity: 0; transform: translateY(-80px) scale(0.5); }
-    }
-
-    /* Bachi (drumstick) indicators */
-    #bachi-hint {
-      margin-top: 20px;
-      color: rgba(255,200,100,0.5);
-      font-size: 14px;
-      letter-spacing: 0.1em;
+      to   { opacity: 0; transform: translateY(-70px) scale(0.4); }
     }
   </style>
 </head>
 <body>
-
 <button id="back-btn" onclick="location.href='../../index.html'">←</button>
-
 <div id="title">たいこ 🥁</div>
 
 <div id="drum-stage">
-  <!-- Left small drum -->
-  <div class="drum-wrap" id="drum-ko" data-freq="220" data-type="ko">
-    <svg class="drum-svg" width="130" height="110" viewBox="0 0 130 110">
-      <!-- Body cylinder side -->
-      <rect x="10" y="28" width="110" height="62" rx="6" fill="#C0392B"/>
-      <rect x="10" y="28" width="110" height="62" rx="6" fill="url(#sideGrad)"/>
-      <!-- Decorative band -->
-      <rect x="10" y="50" width="110" height="18" fill="rgba(0,0,0,0.15)"/>
-      <rect x="10" y="52" width="110" height="3"  fill="rgba(255,255,255,0.1)"/>
-      <!-- Ropes (diagonal lines) -->
-      <line x1="25" y1="28" x2="18" y2="90" stroke="#8B5E2A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="50" y1="28" x2="43" y2="90" stroke="#8B5E2A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="80" y1="28" x2="87" y2="90" stroke="#8B5E2A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="105" y1="28" x2="112" y2="90" stroke="#8B5E2A" stroke-width="3" stroke-linecap="round"/>
-      <!-- Top head (ellipse) -->
-      <ellipse cx="65" cy="28" rx="55" ry="14" fill="#F5DEB3"/>
-      <ellipse cx="65" cy="28" rx="55" ry="14" fill="url(#headGrad)"/>
-      <!-- Head rim -->
-      <ellipse cx="65" cy="28" rx="55" ry="14" fill="none" stroke="#8B5E2A" stroke-width="4"/>
-      <!-- Bottom head -->
-      <ellipse cx="65" cy="90" rx="55" ry="14" fill="#D4C5A0"/>
-      <ellipse cx="65" cy="90" rx="55" ry="14" fill="none" stroke="#8B5E2A" stroke-width="4"/>
+  <!-- Row 1: ko-left, cymbal, ko-right -->
+  <!-- Ko drum left -->
+  <div class="drum-wrap" data-freq="280" data-type="ko" data-color="E74C3C">
+    <div class="bachi-wrap"><svg width="16" height="58" viewBox="0 0 16 58">
+      <rect x="5" y="0" width="6" height="42" rx="3" fill="#C8A060"/>
+      <ellipse cx="8" cy="50" rx="7" ry="8" fill="#A06030"/>
+    </svg></div>
+    <svg class="drum-svg" width="110" height="88" viewBox="0 0 110 88">
       <defs>
-        <linearGradient id="sideGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.15)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0.3)"/>
-        </linearGradient>
-        <radialGradient id="headGrad" cx="40%" cy="40%">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.4)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0.1)"/>
+        <radialGradient id="face-ko1" cx="42%" cy="40%">
+          <stop offset="0%" stop-color="#F8EDD0"/>
+          <stop offset="100%" stop-color="#C8B080"/>
         </radialGradient>
       </defs>
+      <!-- side -->
+      <rect x="8" y="44" width="94" height="32" rx="5" fill="#C0392B"/>
+      <rect x="8" y="44" width="94" height="32" rx="5" fill="url(#sg-ko1)" opacity="0.6"/>
+      <!-- ropes -->
+      <line x1="22" y1="44" x2="16" y2="76" stroke="#7A4010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="44" y1="44" x2="38" y2="76" stroke="#7A4010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="66" y1="44" x2="72" y2="76" stroke="#7A4010" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="88" y1="44" x2="94" y2="76" stroke="#7A4010" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- bottom ellipse -->
+      <ellipse cx="55" cy="76" rx="47" ry="12" fill="#B09060"/>
+      <ellipse cx="55" cy="76" rx="47" ry="12" fill="none" stroke="#7A4010" stroke-width="3"/>
+      <!-- TOP FACE (big ry = more top-down) -->
+      <ellipse cx="55" cy="44" rx="47" ry="28" fill="url(#face-ko1)"/>
+      <ellipse cx="55" cy="44" rx="47" ry="28" fill="none" stroke="#7A4010" stroke-width="3.5"/>
+      <!-- center mark -->
+      <circle cx="55" cy="44" r="12" fill="rgba(180,40,20,0.35)" stroke="rgba(160,30,10,0.5)" stroke-width="1.5"/>
+      <defs><linearGradient id="sg-ko1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fff" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.35"/>
+      </linearGradient></defs>
     </svg>
-    <div class="drum-stand"></div>
+    <div class="drum-stand" style="height:12px"></div>
   </div>
 
-  <!-- Center big drum (おおだいこ) -->
-  <div class="drum-wrap" id="drum-o" data-freq="80" data-type="o">
-    <svg class="drum-svg" width="220" height="190" viewBox="0 0 220 190">
-      <rect x="10" y="42" width="200" height="110" rx="8" fill="#C0392B"/>
-      <rect x="10" y="42" width="200" height="110" rx="8" fill="url(#sideGrad2)"/>
-      <!-- Band -->
-      <rect x="10" y="80"  width="200" height="34" fill="rgba(0,0,0,0.15)"/>
-      <rect x="10" y="83"  width="200" height="4"  fill="rgba(255,255,255,0.1)"/>
-      <!-- Ropes -->
-      <line x1="32"  y1="42" x2="22"  y2="152" stroke="#8B5E2A" stroke-width="4" stroke-linecap="round"/>
-      <line x1="70"  y1="42" x2="60"  y2="152" stroke="#8B5E2A" stroke-width="4" stroke-linecap="round"/>
-      <line x1="110" y1="42" x2="110" y2="152" stroke="#8B5E2A" stroke-width="4" stroke-linecap="round"/>
-      <line x1="150" y1="42" x2="160" y2="152" stroke="#8B5E2A" stroke-width="4" stroke-linecap="round"/>
-      <line x1="188" y1="42" x2="198" y2="152" stroke="#8B5E2A" stroke-width="4" stroke-linecap="round"/>
-      <!-- Top head -->
-      <ellipse cx="110" cy="42"  rx="100" ry="24" fill="#F5DEB3"/>
-      <ellipse cx="110" cy="42"  rx="100" ry="24" fill="url(#headGrad2)"/>
-      <ellipse cx="110" cy="42"  rx="100" ry="24" fill="none" stroke="#8B5E2A" stroke-width="5"/>
-      <!-- Circle mark on head -->
-      <circle  cx="110" cy="42"  r="30" fill="rgba(180,30,30,0.4)" stroke="rgba(160,20,20,0.6)" stroke-width="2"/>
-      <!-- Bottom head -->
-      <ellipse cx="110" cy="152" rx="100" ry="24" fill="#D4C5A0"/>
-      <ellipse cx="110" cy="152" rx="100" ry="24" fill="none" stroke="#8B5E2A" stroke-width="5"/>
+  <!-- Cymbal (top center) -->
+  <div class="cymbal-wrap" data-type="cymbal" style="align-self:end; margin-bottom:10px">
+    <div class="bachi-wrap"><svg width="16" height="58" viewBox="0 0 16 58">
+      <rect x="5" y="0" width="6" height="42" rx="3" fill="#C8A060"/>
+      <ellipse cx="8" cy="50" rx="7" ry="8" fill="#A06030"/>
+    </svg></div>
+    <svg class="cymbal-svg" width="140" height="52" viewBox="0 0 140 52">
       <defs>
-        <linearGradient id="sideGrad2" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.15)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0.3)"/>
-        </linearGradient>
-        <radialGradient id="headGrad2" cx="40%" cy="40%">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.45)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0.1)"/>
+        <radialGradient id="cym-grad" cx="45%" cy="42%">
+          <stop offset="0%" stop-color="#FFF0A0"/>
+          <stop offset="40%" stop-color="#D4A820"/>
+          <stop offset="100%" stop-color="#8A6010"/>
         </radialGradient>
       </defs>
+      <!-- main disc -->
+      <ellipse cx="70" cy="30" rx="66" ry="20" fill="url(#cym-grad)"/>
+      <ellipse cx="70" cy="30" rx="66" ry="20" fill="none" stroke="#B08820" stroke-width="2.5"/>
+      <!-- rim highlight -->
+      <ellipse cx="70" cy="29" rx="64" ry="18" fill="none" stroke="rgba(255,255,200,0.4)" stroke-width="1"/>
+      <!-- concentric rings -->
+      <ellipse cx="70" cy="30" rx="50" ry="15" fill="none" stroke="rgba(180,130,0,0.4)" stroke-width="1"/>
+      <ellipse cx="70" cy="30" rx="34" ry="10" fill="none" stroke="rgba(180,130,0,0.4)" stroke-width="1"/>
+      <!-- center bell -->
+      <ellipse cx="70" cy="28" rx="14" ry="8" fill="#FFE060"/>
+      <ellipse cx="70" cy="28" rx="14" ry="8" fill="none" stroke="#C09010" stroke-width="1.5"/>
+      <ellipse cx="70" cy="27" rx="6"  ry="4" fill="rgba(255,255,200,0.6)"/>
     </svg>
-    <div class="drum-stand" style="width:50%;height:24px;"></div>
+    <div class="cymbal-stand-post"></div>
+    <div class="cymbal-base"></div>
   </div>
 
-  <!-- Right small drum -->
-  <div class="drum-wrap" id="drum-ko2" data-freq="330" data-type="ko">
-    <svg class="drum-svg" width="130" height="110" viewBox="0 0 130 110">
-      <rect x="10" y="28" width="110" height="62" rx="6" fill="#C0392B"/>
-      <rect x="10" y="28" width="110" height="62" rx="6" fill="url(#sideGrad3)"/>
-      <rect x="10" y="50" width="110" height="18" fill="rgba(0,0,0,0.15)"/>
-      <line x1="25"  y1="28" x2="18"  y2="90" stroke="#8B5E2A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="50"  y1="28" x2="43"  y2="90" stroke="#8B5E2A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="80"  y1="28" x2="87"  y2="90" stroke="#8B5E2A" stroke-width="3" stroke-linecap="round"/>
-      <line x1="105" y1="28" x2="112" y2="90" stroke="#8B5E2A" stroke-width="3" stroke-linecap="round"/>
-      <ellipse cx="65" cy="28" rx="55" ry="14" fill="#F5DEB3"/>
-      <ellipse cx="65" cy="28" rx="55" ry="14" fill="url(#headGrad3)"/>
-      <ellipse cx="65" cy="28" rx="55" ry="14" fill="none" stroke="#8B5E2A" stroke-width="4"/>
-      <ellipse cx="65" cy="90" rx="55" ry="14" fill="#D4C5A0"/>
-      <ellipse cx="65" cy="90" rx="55" ry="14" fill="none" stroke="#8B5E2A" stroke-width="4"/>
+  <!-- Ko drum right (higher pitch) -->
+  <div class="drum-wrap" data-freq="370" data-type="ko" data-color="8E44AD">
+    <div class="bachi-wrap"><svg width="16" height="58" viewBox="0 0 16 58">
+      <rect x="5" y="0" width="6" height="42" rx="3" fill="#C8A060"/>
+      <ellipse cx="8" cy="50" rx="7" ry="8" fill="#A06030"/>
+    </svg></div>
+    <svg class="drum-svg" width="110" height="88" viewBox="0 0 110 88">
       <defs>
-        <linearGradient id="sideGrad3" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.15)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0.3)"/>
-        </linearGradient>
-        <radialGradient id="headGrad3" cx="40%" cy="40%">
-          <stop offset="0%" stop-color="rgba(255,255,255,0.4)"/>
-          <stop offset="100%" stop-color="rgba(0,0,0,0.1)"/>
+        <radialGradient id="face-ko2" cx="42%" cy="40%">
+          <stop offset="0%" stop-color="#F8EDD0"/>
+          <stop offset="100%" stop-color="#C8B080"/>
         </radialGradient>
       </defs>
+      <rect x="8" y="44" width="94" height="32" rx="5" fill="#8E44AD"/>
+      <rect x="8" y="44" width="94" height="32" rx="5" fill="url(#sg-ko2)" opacity="0.6"/>
+      <line x1="22" y1="44" x2="16" y2="76" stroke="#5A2080" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="44" y1="44" x2="38" y2="76" stroke="#5A2080" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="66" y1="44" x2="72" y2="76" stroke="#5A2080" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="88" y1="44" x2="94" y2="76" stroke="#5A2080" stroke-width="2.5" stroke-linecap="round"/>
+      <ellipse cx="55" cy="76" rx="47" ry="12" fill="#9B59B6" opacity="0.6"/>
+      <ellipse cx="55" cy="76" rx="47" ry="12" fill="none" stroke="#5A2080" stroke-width="3"/>
+      <ellipse cx="55" cy="44" rx="47" ry="28" fill="url(#face-ko2)"/>
+      <ellipse cx="55" cy="44" rx="47" ry="28" fill="none" stroke="#5A2080" stroke-width="3.5"/>
+      <circle cx="55" cy="44" r="12" fill="rgba(100,30,160,0.35)" stroke="rgba(80,20,140,0.5)" stroke-width="1.5"/>
+      <defs><linearGradient id="sg-ko2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fff" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.35"/>
+      </linearGradient></defs>
     </svg>
-    <div class="drum-stand"></div>
+    <div class="drum-stand" style="height:12px"></div>
   </div>
+
+  <!-- Row 2: chu-left, O-daiko, chu-right -->
+
+  <!-- Chu drum left -->
+  <div class="drum-wrap" data-freq="150" data-type="chu">
+    <div class="bachi-wrap"><svg width="18" height="66" viewBox="0 0 18 66">
+      <rect x="5" y="0" width="8" height="48" rx="4" fill="#C8A060"/>
+      <ellipse cx="9" cy="57" rx="8" ry="9" fill="#A06030"/>
+    </svg></div>
+    <svg class="drum-svg" width="145" height="118" viewBox="0 0 145 118">
+      <defs>
+        <radialGradient id="face-chu1" cx="42%" cy="40%">
+          <stop offset="0%" stop-color="#F8EDD0"/>
+          <stop offset="100%" stop-color="#C8B080"/>
+        </radialGradient>
+      </defs>
+      <rect x="8" y="58" width="129" height="44" rx="6" fill="#1A6B2A"/>
+      <rect x="8" y="58" width="129" height="44" rx="6" fill="url(#sg-chu1)" opacity="0.6"/>
+      <line x1="26"  y1="58" x2="18"  y2="102" stroke="#0D4015" stroke-width="3" stroke-linecap="round"/>
+      <line x1="55"  y1="58" x2="47"  y2="102" stroke="#0D4015" stroke-width="3" stroke-linecap="round"/>
+      <line x1="90"  y1="58" x2="98"  y2="102" stroke="#0D4015" stroke-width="3" stroke-linecap="round"/>
+      <line x1="119" y1="58" x2="127" y2="102" stroke="#0D4015" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="72.5" cy="102" rx="64.5" ry="16" fill="#155220" opacity="0.8"/>
+      <ellipse cx="72.5" cy="102" rx="64.5" ry="16" fill="none" stroke="#0D4015" stroke-width="3.5"/>
+      <ellipse cx="72.5" cy="58" rx="64.5" ry="38" fill="url(#face-chu1)"/>
+      <ellipse cx="72.5" cy="58" rx="64.5" ry="38" fill="none" stroke="#0D4015" stroke-width="4"/>
+      <circle  cx="72.5" cy="58" r="16" fill="rgba(20,120,40,0.35)" stroke="rgba(10,80,20,0.5)" stroke-width="1.5"/>
+      <defs><linearGradient id="sg-chu1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fff" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.4"/>
+      </linearGradient></defs>
+    </svg>
+    <div class="drum-stand" style="height:16px; width:45%"></div>
+  </div>
+
+  <!-- O-daiko (big center) -->
+  <div class="drum-wrap" data-freq="68" data-type="o">
+    <div class="bachi-wrap" style="right:-10px; top:-10px"><svg width="22" height="80" viewBox="0 0 22 80">
+      <rect x="6" y="0" width="10" height="58" rx="5" fill="#C8A060"/>
+      <ellipse cx="11" cy="69" rx="10" ry="11" fill="#A06030"/>
+    </svg></div>
+    <svg class="drum-svg" width="195" height="158" viewBox="0 0 195 158">
+      <defs>
+        <radialGradient id="face-o" cx="42%" cy="40%">
+          <stop offset="0%" stop-color="#FCF0D5"/>
+          <stop offset="100%" stop-color="#C0A070"/>
+        </radialGradient>
+      </defs>
+      <!-- side -->
+      <rect x="8" y="78" width="179" height="58" rx="8" fill="#8B1A1A"/>
+      <rect x="8" y="78" width="179" height="58" rx="8" fill="url(#sg-o)" opacity="0.6"/>
+      <!-- decorative stripe -->
+      <rect x="8" y="100" width="179" height="16" fill="rgba(0,0,0,0.18)"/>
+      <!-- ropes -->
+      <line x1="28"  y1="78" x2="18"  y2="136" stroke="#6A3008" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="62"  y1="78" x2="52"  y2="136" stroke="#6A3008" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="97"  y1="78" x2="97"  y2="136" stroke="#6A3008" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="133" y1="78" x2="143" y2="136" stroke="#6A3008" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="167" y1="78" x2="177" y2="136" stroke="#6A3008" stroke-width="3.5" stroke-linecap="round"/>
+      <!-- bottom -->
+      <ellipse cx="97.5" cy="136" rx="89.5" ry="22" fill="#9A3020" opacity="0.7"/>
+      <ellipse cx="97.5" cy="136" rx="89.5" ry="22" fill="none" stroke="#6A3008" stroke-width="4.5"/>
+      <!-- TOP FACE (large ry = top-down look) -->
+      <ellipse cx="97.5" cy="78" rx="89.5" ry="54" fill="url(#face-o)"/>
+      <ellipse cx="97.5" cy="78" rx="89.5" ry="54" fill="none" stroke="#6A3008" stroke-width="5"/>
+      <!-- center circle mark -->
+      <circle cx="97.5" cy="78" r="24" fill="rgba(160,20,20,0.4)" stroke="rgba(140,10,10,0.6)" stroke-width="2"/>
+      <!-- inner shine -->
+      <ellipse cx="80" cy="60" rx="22" ry="14" fill="rgba(255,255,255,0.12)" transform="rotate(-20,80,60)"/>
+      <defs><linearGradient id="sg-o" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fff" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.4"/>
+      </linearGradient></defs>
+    </svg>
+    <div class="drum-stand" style="height:20px; width:42%"></div>
+  </div>
+
+  <!-- Chu drum right -->
+  <div class="drum-wrap" data-freq="200" data-type="chu">
+    <div class="bachi-wrap"><svg width="18" height="66" viewBox="0 0 18 66">
+      <rect x="5" y="0" width="8" height="48" rx="4" fill="#C8A060"/>
+      <ellipse cx="9" cy="57" rx="8" ry="9" fill="#A06030"/>
+    </svg></div>
+    <svg class="drum-svg" width="145" height="118" viewBox="0 0 145 118">
+      <defs>
+        <radialGradient id="face-chu2" cx="42%" cy="40%">
+          <stop offset="0%" stop-color="#F8EDD0"/>
+          <stop offset="100%" stop-color="#C8B080"/>
+        </radialGradient>
+      </defs>
+      <rect x="8" y="58" width="129" height="44" rx="6" fill="#1A4A8B"/>
+      <rect x="8" y="58" width="129" height="44" rx="6" fill="url(#sg-chu2)" opacity="0.6"/>
+      <line x1="26"  y1="58" x2="18"  y2="102" stroke="#0D2860" stroke-width="3" stroke-linecap="round"/>
+      <line x1="55"  y1="58" x2="47"  y2="102" stroke="#0D2860" stroke-width="3" stroke-linecap="round"/>
+      <line x1="90"  y1="58" x2="98"  y2="102" stroke="#0D2860" stroke-width="3" stroke-linecap="round"/>
+      <line x1="119" y1="58" x2="127" y2="102" stroke="#0D2860" stroke-width="3" stroke-linecap="round"/>
+      <ellipse cx="72.5" cy="102" rx="64.5" ry="16" fill="#153870" opacity="0.8"/>
+      <ellipse cx="72.5" cy="102" rx="64.5" ry="16" fill="none" stroke="#0D2860" stroke-width="3.5"/>
+      <ellipse cx="72.5" cy="58"  rx="64.5" ry="38" fill="url(#face-chu2)"/>
+      <ellipse cx="72.5" cy="58"  rx="64.5" ry="38" fill="none" stroke="#0D2860" stroke-width="4"/>
+      <circle  cx="72.5" cy="58"  r="16" fill="rgba(20,60,160,0.35)" stroke="rgba(10,40,120,0.5)" stroke-width="1.5"/>
+      <defs><linearGradient id="sg-chu2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#fff" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#000" stop-opacity="0.4"/>
+      </linearGradient></defs>
+    </svg>
+    <div class="drum-stand" style="height:16px; width:45%"></div>
+  </div>
+
 </div>
 
-<div id="bachi-hint">たたいてみよう！</div>
+<!-- floating text -->
+<div id="hint" style="color:rgba(255,200,80,0.45);font-size:13px;margin-top:14px;letter-spacing:0.1em">たたいてみよう！</div>
 
 <script>
-// ── Taiko sound synthesis ──────────────────────────────────
+// ── Audio ──────────────────────────────────────────────────
 let _ctx = null;
 function getAudio() {
   if (!_ctx) _ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -243,118 +398,147 @@ function getAudio() {
   return _ctx;
 }
 
-function hitTaiko(baseFreq, type) {
+function hitSound(baseFreq, type) {
   const ctx = getAudio();
   const now = ctx.currentTime;
 
   if (type === 'o') {
-    // おおだいこ: deep boom
-    // Layer 1: tonal body (low sine, pitch drops fast)
-    const osc1 = ctx.createOscillator();
-    const g1   = ctx.createGain();
-    osc1.connect(g1); g1.connect(ctx.destination);
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(baseFreq * 1.8, now);
-    osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.6, now + 0.12);
-    g1.gain.setValueAtTime(0.9, now);
-    g1.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
-    osc1.start(now); osc1.stop(now + 0.9);
+    // おおだいこ: deep boom with pitch drop
+    const osc = ctx.createOscillator();
+    const g   = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq * 2.2, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.55, now + 0.14);
+    g.gain.setValueAtTime(1.0, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 1.1);
+    osc.start(now); osc.stop(now + 1.1);
 
-    // Layer 2: mid thump
+    // mid body
     const osc2 = ctx.createOscillator();
     const g2   = ctx.createGain();
     osc2.connect(g2); g2.connect(ctx.destination);
     osc2.type = 'triangle';
-    osc2.frequency.setValueAtTime(baseFreq * 3, now);
-    osc2.frequency.exponentialRampToValueAtTime(baseFreq, now + 0.08);
-    g2.gain.setValueAtTime(0.5, now);
-    g2.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-    osc2.start(now); osc2.stop(now + 0.35);
+    osc2.frequency.setValueAtTime(baseFreq * 4, now);
+    osc2.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, now + 0.1);
+    g2.gain.setValueAtTime(0.45, now);
+    g2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+    osc2.start(now); osc2.stop(now + 0.4);
 
-    // Layer 3: noise transient (attack crack)
-    const bufSize = ctx.sampleRate * 0.08;
+    // thump noise
+    _noise(ctx, now, 200, 0.6, 0.09);
+
+  } else if (type === 'chu') {
+    // 中太鼓
+    const osc = ctx.createOscillator();
+    const g   = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq * 2.5, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, now + 0.1);
+    g.gain.setValueAtTime(0.8, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+    osc.start(now); osc.stop(now + 0.7);
+    _noise(ctx, now, 320, 0.5, 0.065);
+
+  } else if (type === 'ko') {
+    // 小太鼓: snappy
+    const osc = ctx.createOscillator();
+    const g   = ctx.createGain();
+    osc.connect(g); g.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq * 3, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.9, now + 0.07);
+    g.gain.setValueAtTime(0.65, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+    osc.start(now); osc.stop(now + 0.45);
+    _noise(ctx, now, 500, 0.45, 0.05);
+
+  } else if (type === 'cymbal') {
+    // シンバル: metallic noise
+    const bufSize = ctx.sampleRate * 0.8;
     const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
     const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
-    const noise = ctx.createBufferSource();
-    noise.buffer = buf;
-    const gn = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 180;
-    filter.Q.value = 0.8;
-    noise.connect(filter); filter.connect(gn); gn.connect(ctx.destination);
-    gn.gain.setValueAtTime(0.7, now);
-    gn.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-    noise.start(now); noise.stop(now + 0.08);
+    for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.value = 5000;
+    const g = ctx.createGain();
+    src.connect(hp); hp.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.5, now);
+    g.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+    src.start(now); src.stop(now + 0.8);
 
-  } else {
-    // こだいこ: snappy higher-pitched hit
-    const osc1 = ctx.createOscillator();
-    const g1   = ctx.createGain();
-    osc1.connect(g1); g1.connect(ctx.destination);
-    osc1.type = 'sine';
-    osc1.frequency.setValueAtTime(baseFreq * 2, now);
-    osc1.frequency.exponentialRampToValueAtTime(baseFreq * 0.8, now + 0.07);
-    g1.gain.setValueAtTime(0.7, now);
-    g1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-    osc1.start(now); osc1.stop(now + 0.45);
-
-    // Noise crack
-    const bufSize = ctx.sampleRate * 0.05;
-    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < bufSize; i++) data[i] = (Math.random() * 2 - 1);
-    const noise = ctx.createBufferSource();
-    noise.buffer = buf;
-    const gn = ctx.createGain();
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'bandpass';
-    filter.frequency.value = 400;
-    filter.Q.value = 1.2;
-    noise.connect(filter); filter.connect(gn); gn.connect(ctx.destination);
-    gn.gain.setValueAtTime(0.5, now);
-    gn.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-    noise.start(now); noise.stop(now + 0.05);
+    // ping tone
+    const osc = ctx.createOscillator();
+    const g2  = ctx.createGain();
+    osc.connect(g2); g2.connect(ctx.destination);
+    osc.type = 'sine'; osc.frequency.value = 3200;
+    g2.gain.setValueAtTime(0.3, now);
+    g2.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+    osc.start(now); osc.stop(now + 0.6);
   }
 }
 
-// ── Hit handler ───────────────────────────────────────────
-const NOTES = ['ドン！','ドン','ドコ','ドン！','ドン'];
-
-function handleHit(drumEl) {
-  const freq = parseFloat(drumEl.dataset.freq);
-  const type = drumEl.dataset.type;
-
-  hitTaiko(freq, type);
-
-  // Bounce animation
-  drumEl.classList.add('hit');
-  setTimeout(() => drumEl.classList.remove('hit'), 120);
-
-  // Ripple
-  const ripple = document.createElement('div');
-  ripple.className = 'ripple';
-  drumEl.appendChild(ripple);
-  setTimeout(() => ripple.remove(), 500);
-
-  // Floating note text
-  const rect = drumEl.getBoundingClientRect();
-  const note = document.createElement('div');
-  note.className = 'hit-note';
-  note.textContent = NOTES[Math.floor(Math.random() * NOTES.length)];
-  note.style.left = (rect.left + rect.width / 2 - 20) + 'px';
-  note.style.top  = (rect.top + 20) + 'px';
-  note.style.color = type === 'o' ? '#FFD580' : '#FF9898';
-  document.body.appendChild(note);
-  setTimeout(() => note.remove(), 900);
+function _noise(ctx, now, freq, vol, dur) {
+  const bufSize = Math.floor(ctx.sampleRate * dur);
+  const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource();
+  src.buffer = buf;
+  const bp = ctx.createBiquadFilter();
+  bp.type = 'bandpass'; bp.frequency.value = freq; bp.Q.value = 0.9;
+  const g = ctx.createGain();
+  src.connect(bp); bp.connect(g); g.connect(ctx.destination);
+  g.gain.setValueAtTime(vol, now);
+  g.gain.exponentialRampToValueAtTime(0.001, now + dur);
+  src.start(now); src.stop(now + dur);
 }
 
-// Attach events to all drums
-document.querySelectorAll('.drum-wrap').forEach(drum => {
-  drum.addEventListener('pointerdown', e => {
+// ── Hit handler ───────────────────────────────────────────
+const LABELS = { o: ['ドン！','ドーン','ドン'], chu: ['ドン','ドコ','ドン'], ko: ['コン','ドコ','コン'], cymbal: ['チャン！','シャン','チャーン'] };
+const COLORS  = { o: '#FFD580', chu: '#88FFB0', ko: '#FF9898', cymbal: '#FFE860' };
+
+function doHit(el, type, freq) {
+  hitSound(freq, type);
+
+  el.classList.add('hit');
+  setTimeout(() => el.classList.remove('hit'), type === 'cymbal' ? 500 : 130);
+
+  // Ripple
+  const rip = document.createElement('div');
+  rip.className = 'ripple';
+  el.appendChild(rip);
+  setTimeout(() => rip.remove(), 520);
+
+  // Floating label
+  const rect = el.getBoundingClientRect();
+  const note = document.createElement('div');
+  note.className = 'hit-note';
+  const arr = LABELS[type] || ['ドン'];
+  note.textContent = arr[Math.floor(Math.random() * arr.length)];
+  note.style.left  = (rect.left + rect.width / 2 - 24) + 'px';
+  note.style.top   = (rect.top + 16) + 'px';
+  note.style.color = COLORS[type] || '#FFD580';
+  document.body.appendChild(note);
+  setTimeout(() => note.remove(), 880);
+}
+
+// Bind drums
+document.querySelectorAll('.drum-wrap').forEach(el => {
+  el.addEventListener('pointerdown', e => {
     e.preventDefault();
-    handleHit(drum);
+    doHit(el, el.dataset.type, parseFloat(el.dataset.freq));
+  });
+});
+
+// Bind cymbal
+document.querySelectorAll('.cymbal-wrap').forEach(el => {
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    doHit(el, 'cymbal', 0);
   });
 });
 </script>
