@@ -22,58 +22,51 @@
       text-decoration: none; z-index: 10;
     }
 
-    /* ── ステップドット ── */
-    #progress { display: flex; gap: 10px; margin-bottom: 18px; }
-    .dot {
-      width: 13px; height: 13px; border-radius: 50%;
-      background: rgba(0,0,0,0.15); transition: all 0.3s;
-    }
+    /* ステップドット */
+    #progress { display: flex; gap: 10px; margin-bottom: 16px; }
+    .dot { width: 13px; height: 13px; border-radius: 50%; background: rgba(0,0,0,0.15); transition: all 0.3s; }
     .dot.done   { background: #e64a19; }
     .dot.active { background: #e64a19; transform: scale(1.5); }
 
-    /* ── 弁当箱SVG ── */
-    #bento-wrap {
-      width: 100%; max-width: 400px;
-      margin-bottom: 22px;
-    }
+    /* 弁当箱 */
+    #bento-wrap { width: 100%; max-width: 400px; margin-bottom: 20px; }
     #bento-wrap svg { width: 100%; height: auto; }
 
-    /* 食材テキスト（SVG foreignObject の中身） */
+    /* セル内コンテンツ */
     .cell-content {
       width: 100%; height: 100%;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 2px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
     }
-    .cell-emoji { font-size: 2.6rem; line-height: 1; }
-    .cell-name  { font-size: 0.72rem; color: #555; font-weight: bold;
-                  font-family: "Hiragino Maru Gothic ProN", sans-serif; }
+    .cell-content svg { width: 60%; height: 60%; }
+    .cell-name { font-size: 0.68rem; color: #555; font-weight: bold; font-family: sans-serif; }
 
-    /* ── 選択エリア ── */
-    #select-area { width: 100%; max-width: 400px; }
+    /* 小セル用 */
+    .cell-content.sm svg { width: 52%; height: 52%; }
+    .cell-content.sm .cell-name { font-size: 0.6rem; }
+
+    /* 選択エリア */
+    #select-area { width: 100%; max-width: 420px; }
     #category-title {
       font-size: 1.3rem; font-weight: bold; color: #e64a19;
-      text-align: center; margin-bottom: 14px;
+      text-align: center; margin-bottom: 12px;
     }
     #choices { display: flex; flex-direction: column; gap: 10px; }
     .choice-btn {
-      background: #fff;
-      border: 3px solid #ffe082;
-      border-radius: 18px;
-      padding: 14px 18px;
+      background: #fff; border: 3px solid #ffe082; border-radius: 18px;
+      padding: 10px 16px;
       display: flex; align-items: center; gap: 14px;
-      cursor: pointer; touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
+      cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
       box-shadow: 0 4px 0 #ffc107;
       transition: transform 0.1s, box-shadow 0.1s;
-      font-family: inherit; text-align: left;
+      font-family: inherit; text-align: left; width: 100%;
     }
     .choice-btn:active { transform: translateY(3px); box-shadow: 0 1px 0 #ffc107; }
-    .choice-icon { font-size: 2.6rem; flex-shrink: 0; line-height: 1; }
+    .choice-icon { width: 64px; height: 64px; flex-shrink: 0; }
+    .choice-icon svg { width: 100%; height: 100%; }
     .choice-name { font-size: 1.1rem; font-weight: bold; color: #333; }
     .choice-desc { font-size: 0.78rem; color: #aaa; margin-top: 2px; }
 
-    /* ── 完成画面 ── */
+    /* 完成画面 */
     #finish-screen {
       display: none; flex-direction: column; align-items: center; gap: 18px;
       width: 100%; max-width: 400px;
@@ -90,13 +83,13 @@
       padding: 14px 18px; width: 100%;
       display: flex; flex-direction: column; gap: 10px;
     }
-    .menu-row { display: flex; align-items: center; gap: 10px; }
-    .menu-row .mr-icon { font-size: 1.8rem; }
+    .menu-row { display: flex; align-items: center; gap: 12px; }
+    .menu-row .mr-icon { width: 48px; height: 48px; flex-shrink: 0; }
+    .menu-row .mr-icon svg { width: 100%; height: 100%; }
     .menu-row .mr-name { font-size: 1rem; font-weight: bold; color: #333; }
     .menu-row .mr-cat  { font-size: 0.72rem; color: #aaa; }
     #restart-btn {
-      background: #e64a19; color: #fff;
-      border: none; border-radius: 50px;
+      background: #e64a19; color: #fff; border: none; border-radius: 50px;
       padding: 15px 36px; font-size: 1.15rem; font-weight: bold;
       cursor: pointer; touch-action: manipulation;
       box-shadow: 0 5px 0 #bf360c; font-family: inherit;
@@ -104,21 +97,11 @@
     }
     #restart-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #bf360c; }
 
-    /* ── お祝い ── */
-    #celebration {
-      position: fixed; inset: 0; display: none;
-      align-items: center; justify-content: center;
-      z-index: 30; pointer-events: none;
-    }
+    /* お祝い */
+    #celebration { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 30; pointer-events: none; }
     #celebration.show { display: flex; }
-    .star-burst {
-      position: absolute; font-size: 2.4rem;
-      animation: sf 1.6s ease-out forwards;
-    }
-    @keyframes sf {
-      0%  { opacity:1; transform:translate(0,0) scale(1); }
-      100%{ opacity:0; transform:translate(var(--tx),var(--ty)) scale(0.3); }
-    }
+    .star-burst { position: absolute; font-size: 2.4rem; animation: sf 1.6s ease-out forwards; }
+    @keyframes sf { 0%{opacity:1;transform:translate(0,0) scale(1)} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.3)} }
   </style>
 </head>
 <body>
@@ -126,68 +109,62 @@
 <a id="back-btn" href="../../index.html">← もどる</a>
 <div id="progress"></div>
 
-<!-- 弁当箱 SVG -->
+<!-- 弁当箱SVG -->
 <div id="bento-wrap">
-  <svg id="bento-svg" viewBox="0 0 360 220" xmlns="http://www.w3.org/2000/svg">
-
-    <!-- ふた（蓋） -->
-    <rect x="10" y="2" width="340" height="28" rx="10" fill="#c62828"/>
-    <rect x="10" y="2" width="340" height="28" rx="10" fill="none" stroke="#b71c1c" stroke-width="3"/>
-    <!-- ふたのつまみ -->
-    <rect x="155" y="0" width="50" height="10" rx="5" fill="#ef9a9a"/>
-
-    <!-- 箱本体 -->
-    <rect x="10" y="30" width="340" height="182" rx="12" fill="#fff9e6"/>
-    <rect x="10" y="30" width="340" height="182" rx="12" fill="none" stroke="#c62828" stroke-width="5"/>
-
-    <!-- 仕切り縦（右1/3） -->
-    <line x1="250" y1="35" x2="250" y2="208" stroke="#e57373" stroke-width="3"/>
-    <!-- 仕切り横（右ブロック） -->
-    <line x1="250" y1="120" x2="350" y2="120" stroke="#e57373" stroke-width="3"/>
-
-    <!-- セル1: 主食（左大） -->
-    <foreignObject id="fo-main" x="14" y="34" width="230" height="172">
-      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content" id="cell-main">
-        <span style="font-size:2rem;opacity:0.2">🍱</span>
-        <span style="font-size:0.7rem;color:#ccc;font-family:sans-serif">しゅしょく</span>
-      </div>
-    </foreignObject>
-
-    <!-- セル2: 主菜（右上） -->
-    <foreignObject id="fo-side1" x="253" y="34" width="100" height="82">
-      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content" id="cell-side1">
-        <span style="font-size:1.4rem;opacity:0.2">🍽️</span>
-        <span style="font-size:0.6rem;color:#ccc;font-family:sans-serif">しゅさい</span>
-      </div>
-    </foreignObject>
-
-    <!-- セル3: 副菜（右中） -->
-    <foreignObject id="fo-side2" x="253" y="122" width="100" height="82">
-      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content" id="cell-side2">
-        <span style="font-size:1.4rem;opacity:0.2">🥗</span>
-        <span style="font-size:0.6rem;color:#ccc;font-family:sans-serif">ふくさい</span>
-      </div>
-    </foreignObject>
-
+  <svg id="bento-svg" viewBox="0 0 360 230" xmlns="http://www.w3.org/2000/svg">
     <!-- 影 -->
-    <ellipse cx="185" cy="215" rx="160" ry="8" fill="rgba(0,0,0,0.1)"/>
+    <ellipse cx="183" cy="226" rx="162" ry="7" fill="rgba(0,0,0,0.1)"/>
+    <!-- 箱本体 -->
+    <rect x="8" y="32" width="344" height="186" rx="14" fill="#fff9e6"/>
+    <rect x="8" y="32" width="344" height="186" rx="14" fill="none" stroke="#c62828" stroke-width="6"/>
+    <!-- 仕切り縦 -->
+    <line x1="246" y1="36" x2="246" y2="214" stroke="#e57373" stroke-width="3.5"/>
+    <!-- 仕切り横（右） -->
+    <line x1="246" y1="123" x2="348" y2="123" stroke="#e57373" stroke-width="3.5"/>
+    <!-- ふた -->
+    <rect x="8" y="4" width="344" height="32" rx="12" fill="#c62828"/>
+    <rect x="8" y="4" width="344" height="32" rx="12" fill="none" stroke="#b71c1c" stroke-width="3"/>
+    <rect x="148" y="2" width="64" height="12" rx="6" fill="#ef9a9a"/>
+    <text x="183" y="25" text-anchor="middle" font-size="13" fill="rgba(255,255,255,0.85)" font-family="sans-serif" font-weight="bold">おべんとう</text>
+
+    <!-- セル1: 主食 (左大) -->
+    <foreignObject id="fo-main" x="10" y="34" width="232" height="180">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content" id="cell-main" style="opacity:0.25">
+        <svg viewBox="0 0 100 100"><text x="50" y="62" text-anchor="middle" font-size="52">🍱</text></svg>
+        <span class="cell-name">しゅしょく</span>
+      </div>
+    </foreignObject>
+
+    <!-- セル2: 主菜 (右上) -->
+    <foreignObject id="fo-side1" x="249" y="34" width="100" height="86">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content sm" id="cell-side1" style="opacity:0.25">
+        <svg viewBox="0 0 100 100"><text x="50" y="62" text-anchor="middle" font-size="52">🍽️</text></svg>
+        <span class="cell-name">しゅさい</span>
+      </div>
+    </foreignObject>
+
+    <!-- セル3: 副菜 (右下) -->
+    <foreignObject id="fo-side2" x="249" y="126" width="100" height="86">
+      <div xmlns="http://www.w3.org/1999/xhtml" class="cell-content sm" id="cell-side2" style="opacity:0.25">
+        <svg viewBox="0 0 100 100"><text x="50" y="62" text-anchor="middle" font-size="52">🥗</text></svg>
+        <span class="cell-name">ふくさい</span>
+      </div>
+    </foreignObject>
   </svg>
 </div>
 
-<!-- 飲み物ボトル（箱の外） -->
-<div id="drink-display" style="
-  position:relative; width:100%; max-width:400px; height:0; z-index:5;
-">
+<!-- 飲み物（箱の外） -->
+<div style="position:relative;width:100%;max-width:400px;height:0;">
   <div id="cell-drink" style="
-    position:absolute; right:4px; top:-210px;
-    width:56px; height:56px;
-    background:#e3f2fd; border-radius:50%;
+    position:absolute;right:2px;top:-228px;
+    width:62px;height:62px;
+    background:#e3f2fd;border-radius:50%;
     border:3px dashed #90caf9;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    font-size:0.6rem; color:#90caf9; gap:2px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    font-size:0.58rem;color:#90caf9;gap:1px;opacity:0.5;
   ">
-    <span style="font-size:1.2rem">🧃</span>
-    <span style="font-size:0.55rem;font-family:sans-serif">のみもの</span>
+    <span style="font-size:1.4rem">🧃</span>
+    <span style="font-family:sans-serif">のみもの</span>
   </div>
 </div>
 
@@ -203,47 +180,208 @@
   <div id="menu-list"></div>
   <button id="restart-btn">もういちどつくる 🍱</button>
 </div>
-
 <div id="celebration"></div>
 
 <script src="../../shared/audio.js"></script>
 <script>
+// ─── SVGイラスト定義 ───────────────────────────────────
+const ILLUST = {
+
+  'おにぎり': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="90" rx="40" ry="7" fill="rgba(0,0,0,0.08)"/>
+    <polygon points="50,10 90,86 10,86" fill="white" stroke="#ddd" stroke-width="2"/>
+    <rect x="19" y="68" width="62" height="18" rx="4" fill="#1c1c1c"/>
+    <circle cx="50" cy="46" r="7" fill="#e57373"/>
+    <ellipse cx="36" cy="40" rx="8" ry="5" fill="rgba(255,255,255,0.35)"/>
+  </svg>`,
+
+  'ふりかけごはん': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="88" rx="38" ry="10" fill="#bcaaa4"/>
+    <path d="M13,66 Q11,88 50,92 Q89,88 87,66 Z" fill="#d7ccc8"/>
+    <ellipse cx="50" cy="64" rx="36" ry="18" fill="#fffde7"/>
+    <circle cx="37" cy="57" r="3.5" fill="#ef5350"/>
+    <circle cx="49" cy="53" r="3.5" fill="#66bb6a"/>
+    <circle cx="61" cy="57" r="3.5" fill="#ffa726"/>
+    <circle cx="43" cy="66" r="3" fill="#ce93d8"/>
+    <circle cx="57" cy="65" r="3" fill="#4fc3f7"/>
+    <circle cx="50" cy="58" r="2.5" fill="#ffca28"/>
+  </svg>`,
+
+  'やきそば': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="86" rx="40" ry="10" fill="#6d4c41"/>
+    <ellipse cx="50" cy="74" rx="40" ry="18" fill="#8d6e63"/>
+    <path d="M16,62 Q28,52 40,62 Q52,72 64,62 Q76,52 84,60" stroke="#f5deb3" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+    <path d="M14,72 Q26,62 38,72 Q50,82 62,72 Q74,62 86,70" stroke="#deb887" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+    <path d="M18,55 Q30,45 42,55 Q54,65 66,55 Q78,45 82,53" stroke="#f5deb3" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+    <circle cx="34" cy="60" r="2.5" fill="#558b2f"/>
+    <circle cx="54" cy="64" r="2.5" fill="#558b2f"/>
+    <circle cx="66" cy="54" r="2.5" fill="#558b2f"/>
+    <circle cx="44" cy="68" r="2" fill="#ff7043"/>
+  </svg>`,
+
+  'からあげ': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="90" rx="40" ry="7" fill="rgba(0,0,0,0.08)"/>
+    <!-- 後ろの鶏 -->
+    <path d="M60,72 Q50,56 58,42 Q68,28 76,38 Q86,50 78,68 Z" fill="#e6961e"/>
+    <!-- 手前の鶏 -->
+    <path d="M22,74 Q14,56 24,42 Q34,28 46,36 Q58,44 54,62 Q50,76 36,78 Z" fill="#f0a830"/>
+    <path d="M24,72 Q18,56 26,44 Q34,30 44,38 Q54,46 50,62 Q46,74 34,76 Z" fill="#f5c060"/>
+    <!-- 衣のでこぼこ -->
+    <circle cx="30" cy="52" r="5" fill="#e6961e" opacity="0.7"/>
+    <circle cx="42" cy="44" r="6" fill="#e09020" opacity="0.6"/>
+    <circle cx="44" cy="62" r="4" fill="#c87818" opacity="0.6"/>
+  </svg>`,
+
+  'たまごやき': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="90" rx="38" ry="6" fill="rgba(0,0,0,0.08)"/>
+    <rect x="10" y="28" width="80" height="52" rx="12" fill="#f9a825"/>
+    <rect x="10" y="28" width="80" height="52" rx="12" fill="none" stroke="#f57f17" stroke-width="2.5"/>
+    <line x1="10" y1="46" x2="90" y2="46" stroke="#f57f17" stroke-width="2" opacity="0.5"/>
+    <line x1="10" y1="62" x2="90" y2="62" stroke="#f57f17" stroke-width="2" opacity="0.5"/>
+    <rect x="18" y="34" width="28" height="8" rx="4" fill="rgba(255,255,255,0.35)"/>
+    <rect x="18" y="50" width="18" height="7" rx="3.5" fill="rgba(255,255,255,0.2)"/>
+  </svg>`,
+
+  'ハンバーグ': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="88" rx="40" ry="8" fill="rgba(0,0,0,0.1)"/>
+    <ellipse cx="50" cy="74" rx="40" ry="14" fill="#4e342e"/>
+    <ellipse cx="50" cy="66" rx="40" ry="22" fill="#6d4c41"/>
+    <ellipse cx="50" cy="60" rx="38" ry="20" fill="#8d6e63"/>
+    <!-- ソース -->
+    <path d="M24,54 Q34,44 46,52 Q56,60 66,50 Q74,44 78,52" stroke="#c62828" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.9"/>
+    <!-- ハイライト -->
+    <ellipse cx="38" cy="52" rx="13" ry="7" fill="rgba(255,255,255,0.12)"/>
+  </svg>`,
+
+  'ブロッコリー': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="92" rx="20" ry="6" fill="rgba(0,0,0,0.08)"/>
+    <rect x="44" y="60" width="12" height="30" rx="6" fill="#558b2f"/>
+    <path d="M40,70 Q30,68 28,60 Q26,50 34,50 Q30,40 38,38 Q44,28 50,32 Q56,28 62,38 Q70,40 66,50 Q74,50 72,60 Q70,68 60,70 Z" fill="#388e3c"/>
+    <circle cx="50" cy="35" rx="12" fill="#4caf50"/>
+    <circle cx="37" cy="45" r="11" fill="#4caf50"/>
+    <circle cx="63" cy="45" r="11" fill="#4caf50"/>
+    <circle cx="50" cy="52" r="12" fill="#43a047"/>
+    <circle cx="43" cy="38" r="5" fill="#81c784" opacity="0.55"/>
+  </svg>`,
+
+  'ミニトマト': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="92" rx="38" ry="6" fill="rgba(0,0,0,0.08)"/>
+    <circle cx="28" cy="68" r="20" fill="#e53935"/>
+    <circle cx="72" cy="68" r="20" fill="#e53935"/>
+    <circle cx="50" cy="50" r="22" fill="#ef5350"/>
+    <circle cx="42" cy="41" r="7" fill="rgba(255,255,255,0.35)"/>
+    <circle cx="22" cy="60" r="5" fill="rgba(255,255,255,0.3)"/>
+    <circle cx="66" cy="60" r="5" fill="rgba(255,255,255,0.3)"/>
+    <!-- ヘタ -->
+    <path d="M50,29 L50,21 M43,25 L50,21 M57,25 L50,21 M46,22 L44,17 M54,22 L56,17" stroke="#388e3c" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M28,49 L28,41 M22,45 L28,41 M34,45 L28,41" stroke="#388e3c" stroke-width="2" stroke-linecap="round"/>
+    <path d="M72,49 L72,41 M66,45 L72,41 M78,45 L72,41" stroke="#388e3c" stroke-width="2" stroke-linecap="round"/>
+  </svg>`,
+
+  'コーン': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="90" rx="22" ry="7" fill="rgba(0,0,0,0.08)"/>
+    <!-- 皮 -->
+    <path d="M28,82 Q16,52 30,24 L50,30 L70,24 Q84,52 72,82 Z" fill="#aed581"/>
+    <!-- 粒 -->
+    <circle cx="40" cy="38" r="5.5" fill="#fdd835"/>
+    <circle cx="50" cy="35" r="5.5" fill="#fdd835"/>
+    <circle cx="60" cy="38" r="5.5" fill="#fdd835"/>
+    <circle cx="37" cy="50" r="5.5" fill="#fbc02d"/>
+    <circle cx="47" cy="47" r="5.5" fill="#fdd835"/>
+    <circle cx="57" cy="47" r="5.5" fill="#fdd835"/>
+    <circle cx="63" cy="50" r="5.5" fill="#fbc02d"/>
+    <circle cx="36" cy="62" r="5.5" fill="#fbc02d"/>
+    <circle cx="46" cy="59" r="5.5" fill="#fdd835"/>
+    <circle cx="56" cy="59" r="5.5" fill="#fdd835"/>
+    <circle cx="64" cy="62" r="5.5" fill="#fbc02d"/>
+    <circle cx="40" cy="73" r="5" fill="#f9a825"/>
+    <circle cx="50" cy="71" r="5" fill="#fbc02d"/>
+    <circle cx="60" cy="73" r="5" fill="#f9a825"/>
+    <!-- ひげ -->
+    <path d="M48,30 Q50,18 52,30" stroke="#f57f17" stroke-width="2" fill="none"/>
+  </svg>`,
+
+  'おちゃ': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="92" rx="24" ry="6" fill="rgba(0,0,0,0.08)"/>
+    <rect x="30" y="22" width="40" height="66" rx="10" fill="#a5d6a7"/>
+    <rect x="35" y="13" width="30" height="14" rx="6" fill="#81c784"/>
+    <rect x="38" y="8" width="24" height="10" rx="5" fill="#66bb6a"/>
+    <rect x="32" y="40" width="36" height="28" rx="6" fill="rgba(255,255,255,0.75)"/>
+    <text x="50" y="52" text-anchor="middle" font-size="8" fill="#2e7d32" font-family="sans-serif" font-weight="bold">おちゃ</text>
+    <text x="50" y="63" text-anchor="middle" font-size="11" font-family="sans-serif">🍃</text>
+    <rect x="36" y="26" width="8" height="22" rx="4" fill="rgba(255,255,255,0.4)"/>
+  </svg>`,
+
+  'ジュース': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="92" rx="28" ry="6" fill="rgba(0,0,0,0.08)"/>
+    <rect x="20" y="28" width="60" height="60" rx="8" fill="#ff9800"/>
+    <rect x="20" y="20" width="60" height="12" rx="5" fill="#e65100"/>
+    <!-- ストロー -->
+    <rect x="62" y="4" width="7" height="30" rx="3.5" fill="white"/>
+    <rect x="62" y="4" width="7" height="8" rx="3.5" fill="#ffcc80"/>
+    <!-- ラベル -->
+    <rect x="26" y="40" width="48" height="34" rx="6" fill="#ffe0b2" opacity="0.88"/>
+    <circle cx="50" cy="52" r="13" fill="#ff6d00" opacity="0.85"/>
+    <text x="50" y="56" text-anchor="middle" font-size="12" font-family="sans-serif">🍊</text>
+    <text x="50" y="68" text-anchor="middle" font-size="7.5" fill="#bf360c" font-family="sans-serif" font-weight="bold">JUICE</text>
+    <rect x="26" y="30" width="10" height="24" rx="5" fill="rgba(255,255,255,0.3)"/>
+  </svg>`,
+
+  'ぎゅうにゅう': `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="50" cy="92" rx="26" ry="6" fill="rgba(0,0,0,0.08)"/>
+    <rect x="24" y="30" width="52" height="60" rx="8" fill="#e3f2fd"/>
+    <rect x="24" y="30" width="52" height="60" rx="8" fill="none" stroke="#90caf9" stroke-width="2.5"/>
+    <!-- 屋根型ふた -->
+    <polygon points="24,30 50,14 76,30" fill="#bbdefb"/>
+    <polygon points="24,30 50,14 76,30" fill="none" stroke="#90caf9" stroke-width="2"/>
+    <!-- ラベル -->
+    <rect x="29" y="46" width="42" height="30" rx="5" fill="white" opacity="0.9"/>
+    <text x="50" y="58" text-anchor="middle" font-size="7.5" fill="#1565c0" font-family="sans-serif" font-weight="bold">ぎゅうにゅう</text>
+    <text x="50" y="70" text-anchor="middle" font-size="11" font-family="sans-serif">🐄</text>
+    <rect x="30" y="34" width="8" height="22" rx="4" fill="rgba(255,255,255,0.5)"/>
+  </svg>`,
+};
+
+// ─── ステップデータ ───────────────────────────────────
 const STEPS = [
   {
     category: '🍙 しゅしょくをえらぼう',
     cellId: 'cell-main',
-    bigEmoji: true,
+    size: 'big',
     choices: [
-      { icon:'🍙', name:'おにぎり',       desc:'ぱりぱりのり' },
-      { icon:'🍚', name:'ふりかけごはん', desc:'カラフルごはん' },
-      { icon:'🍜', name:'やきそば',       desc:'もちもち麺' },
+      { key:'おにぎり',       desc:'ぱりぱりのり' },
+      { key:'ふりかけごはん', desc:'カラフルごはん' },
+      { key:'やきそば',       desc:'もちもち麺' },
     ],
   },
   {
     category: '🍗 しゅさいをえらぼう',
     cellId: 'cell-side1',
+    size: 'sm',
     choices: [
-      { icon:'🍗', name:'からあげ',   desc:'ジューシー' },
-      { icon:'🥚', name:'たまごやき', desc:'ふわふわ' },
-      { icon:'🍖', name:'ハンバーグ', desc:'デミグラス' },
+      { key:'からあげ',   desc:'ジューシー' },
+      { key:'たまごやき', desc:'ふわふわ' },
+      { key:'ハンバーグ', desc:'デミグラス' },
     ],
   },
   {
     category: '🥦 ふくさいをえらぼう',
     cellId: 'cell-side2',
+    size: 'sm',
     choices: [
-      { icon:'🥦', name:'ブロッコリー', desc:'もりもり元気' },
-      { icon:'🍅', name:'ミニトマト',   desc:'あかくてかわいい' },
-      { icon:'🌽', name:'コーン',       desc:'プチプチあまい' },
+      { key:'ブロッコリー', desc:'もりもり元気' },
+      { key:'ミニトマト',   desc:'あかくてかわいい' },
+      { key:'コーン',       desc:'プチプチあまい' },
     ],
   },
   {
     category: '🧃 のみものをえらぼう',
     cellId: 'cell-drink',
+    size: 'drink',
     choices: [
-      { icon:'🍵', name:'おちゃ',         desc:'ほっとひとやすみ' },
-      { icon:'🧃', name:'ジュース',        desc:'さわやか' },
-      { icon:'🥛', name:'ぎゅうにゅう',   desc:'こくてまろやか' },
+      { key:'おちゃ',       desc:'ほっとひとやすみ' },
+      { key:'ジュース',     desc:'さわやか' },
+      { key:'ぎゅうにゅう', desc:'こくてまろやか' },
     ],
   },
 ];
@@ -254,14 +392,14 @@ let stepIdx = 0, selected = [];
 const progEl = document.getElementById('progress');
 STEPS.forEach((_,i)=>{
   const d = document.createElement('div');
-  d.className = 'dot'; d.id = `dot-${i}`;
+  d.className='dot'; d.id=`dot-${i}`;
   progEl.appendChild(d);
 });
 
 function updateDots(){
   STEPS.forEach((_,i)=>{
     const d = document.getElementById(`dot-${i}`);
-    d.className = 'dot'+(i<stepIdx?' done':i===stepIdx?' active':'');
+    d.className='dot'+(i<stepIdx?' done':i===stepIdx?' active':'');
   });
 }
 
@@ -270,15 +408,19 @@ function renderStep(){
   const step = STEPS[stepIdx];
   document.getElementById('category-title').textContent = step.category;
   const ch = document.getElementById('choices');
-  ch.innerHTML = '';
+  ch.innerHTML='';
   step.choices.forEach(c=>{
     const btn = document.createElement('button');
-    btn.className = 'choice-btn';
-    btn.innerHTML = `<span class="choice-icon">${c.icon}</span>
-      <div><div class="choice-name">${c.name}</div><div class="choice-desc">${c.desc}</div></div>`;
-    const fn = e=>{ e.preventDefault(); pick(c); };
-    btn.addEventListener('touchstart', fn, {passive:false});
-    btn.addEventListener('mousedown', fn);
+    btn.className='choice-btn';
+    btn.innerHTML=`
+      <span class="choice-icon">${ILLUST[c.key]}</span>
+      <div>
+        <div class="choice-name">${c.key}</div>
+        <div class="choice-desc">${c.desc}</div>
+      </div>`;
+    const fn=e=>{e.preventDefault();pick(c);};
+    btn.addEventListener('touchstart',fn,{passive:false});
+    btn.addEventListener('mousedown',fn);
     ch.appendChild(btn);
   });
 }
@@ -288,35 +430,26 @@ function pick(choice){
   const step = STEPS[stepIdx];
   const cell = document.getElementById(step.cellId);
 
-  // セルを更新
-  if(step.cellId === 'cell-drink'){
-    cell.innerHTML = `<span style="font-size:2rem">${choice.icon}</span><span style="font-size:0.65rem;font-family:sans-serif;color:#555">${choice.name}</span>`;
-    cell.style.background = '#fff9c4';
-    cell.style.borderColor = '#ffc107';
-    cell.style.color = '#555';
+  if(step.size==='drink'){
+    cell.innerHTML=`${ILLUST[choice.key]}<span style="font-size:0.62rem;font-family:sans-serif;color:#555">${choice.key}</span>`;
+    cell.style.opacity='1';
+    cell.style.background='#fff9c4';
+    cell.style.borderStyle='solid';
+    cell.style.borderColor='#ffc107';
   } else {
-    const big = step.bigEmoji;
-    cell.innerHTML = `<div class="cell-content">
-      <span class="${big?'cell-emoji':''}">
-        ${big ? choice.icon : '<span style="font-size:2rem">'+choice.icon+'</span>'}
-      </span>
-      <span class="cell-name">${choice.name}</span>
-    </div>`;
-    if(!big) cell.innerHTML = `<div class="cell-content">
-      <span style="font-size:2rem">${choice.icon}</span>
-      <span class="cell-name">${choice.name}</span>
-    </div>`;
+    const cls = step.size==='sm'?'cell-content sm':'cell-content';
+    cell.innerHTML=`<div class="${cls}">${ILLUST[choice.key]}<span class="cell-name">${choice.key}</span></div>`;
+    cell.style.opacity='1';
   }
 
-  // pop アニメ
-  cell.style.animation = 'none';
-  cell.offsetHeight;
-  cell.style.animation = 'popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+  // ポップアニメ
+  cell.style.animation='none'; cell.offsetHeight;
+  cell.style.animation='popIn 0.4s cubic-bezier(0.34,1.56,0.64,1)';
 
-  const notes = [523.25,587.33,659.25,783.99];
-  playNote(notes[stepIdx], 0.25);
+  const notes=[523.25,587.33,659.25,783.99];
+  playNote(notes[stepIdx],0.25);
   stepIdx++;
-  if(stepIdx >= STEPS.length) showFinish();
+  if(stepIdx>=STEPS.length) showFinish();
   else renderStep();
 }
 
@@ -324,41 +457,38 @@ function showFinish(){
   document.getElementById('select-area').classList.add('hidden');
   updateDots();
   setTimeout(()=>{
-    const fs = document.getElementById('finish-screen');
-    fs.classList.add('show');
-    const ml = document.getElementById('menu-list');
-    ml.innerHTML = '';
-    const cats = ['しゅしょく','しゅさい','ふくさい','のみもの'];
+    document.getElementById('finish-screen').classList.add('show');
+    const ml=document.getElementById('menu-list');
+    ml.innerHTML='';
+    const cats=['しゅしょく','しゅさい','ふくさい','のみもの'];
     selected.forEach((s,i)=>{
-      const r = document.createElement('div');
-      r.className = 'menu-row';
-      r.innerHTML = `<span class="mr-icon">${s.icon}</span>
-        <div><div class="mr-name">${s.name}</div><div class="mr-cat">${cats[i]}</div></div>`;
+      const r=document.createElement('div');
+      r.className='menu-row';
+      r.innerHTML=`<span class="mr-icon">${ILLUST[s.key]}</span>
+        <div><div class="mr-name">${s.key}</div><div class="mr-cat">${cats[i]}</div></div>`;
       ml.appendChild(r);
     });
-    showCelebration();
-    playCelebration();
-  }, 300);
-  document.getElementById('restart-btn').addEventListener('click', restart);
+    showCelebration(); playCelebration();
+  },300);
+  document.getElementById('restart-btn').addEventListener('click',restart);
 }
 
 function restart(){
-  stepIdx = 0; selected = [];
-  // セルリセット
-  const defaults = [
-    ['cell-main',  '2rem',   '🍱', 'しゅしょく'],
-    ['cell-side1', '1.4rem', '🍽️', 'しゅさい'],
-    ['cell-side2', '1.4rem', '🥗', 'ふくさい'],
+  stepIdx=0; selected=[];
+  const resets=[
+    ['cell-main',  'big',  '🍱','しゅしょく'],
+    ['cell-side1', 'sm',   '🍽️','しゅさい'],
+    ['cell-side2', 'sm',   '🥗','ふくさい'],
   ];
-  defaults.forEach(([id,sz,ic,lb])=>{
-    document.getElementById(id).innerHTML =
-      `<div class="cell-content"><span style="font-size:${sz};opacity:0.2">${ic}</span>
-       <span style="font-size:0.7rem;color:#ccc;font-family:sans-serif">${lb}</span></div>`;
+  resets.forEach(([id,sz,ic,lb])=>{
+    const el=document.getElementById(id);
+    el.style.animation='';
+    el.innerHTML=`<svg viewBox="0 0 100 100"><text x="50" y="62" text-anchor="middle" font-size="52">${ic}</text></svg><span class="${sz==='sm'?'cell-name':'cell-name'}">${lb}</span>`;
+    el.style.opacity='0.25';
   });
-  const dr = document.getElementById('cell-drink');
-  dr.innerHTML = `<span style="font-size:1.2rem">🧃</span><span style="font-size:0.55rem;font-family:sans-serif">のみもの</span>`;
-  dr.style.background = '#e3f2fd';
-  dr.style.borderColor = '#90caf9';
+  const dr=document.getElementById('cell-drink');
+  dr.innerHTML=`<span style="font-size:1.4rem">🧃</span><span style="font-family:sans-serif">のみもの</span>`;
+  dr.style.background='#e3f2fd'; dr.style.borderStyle='dashed'; dr.style.borderColor='#90caf9'; dr.style.opacity='0.5';
 
   document.getElementById('finish-screen').classList.remove('show');
   document.getElementById('select-area').classList.remove('hidden');
@@ -366,22 +496,21 @@ function restart(){
 }
 
 function showCelebration(){
-  const el = document.getElementById('celebration');
-  el.innerHTML = ''; el.classList.add('show');
-  const stars = ['⭐','🌟','✨','💫','🎊','🍱','🌈','❤️'];
+  const el=document.getElementById('celebration');
+  el.innerHTML=''; el.classList.add('show');
+  const stars=['⭐','🌟','✨','💫','🎊','🍱','🌈','❤️'];
   for(let i=0;i<20;i++){
-    const s = document.createElement('div');
-    s.className = 'star-burst';
-    s.textContent = stars[i%stars.length];
-    const a=(i/20)*360, d=140+Math.random()*100;
-    s.style.setProperty('--tx', Math.round(Math.cos(a*Math.PI/180)*d)+'px');
-    s.style.setProperty('--ty', Math.round(Math.sin(a*Math.PI/180)*d)+'px');
+    const s=document.createElement('div');
+    s.className='star-burst'; s.textContent=stars[i%stars.length];
+    const a=(i/20)*360,d=140+Math.random()*100;
+    s.style.setProperty('--tx',Math.round(Math.cos(a*Math.PI/180)*d)+'px');
+    s.style.setProperty('--ty',Math.round(Math.sin(a*Math.PI/180)*d)+'px');
     s.style.left='50%'; s.style.top='40%';
     s.style.marginLeft='-20px'; s.style.marginTop='-20px';
     s.style.animationDelay=(Math.random()*0.3)+'s';
     el.appendChild(s);
   }
-  setTimeout(()=>{ el.classList.remove('show'); el.innerHTML=''; }, 3000);
+  setTimeout(()=>{el.classList.remove('show');el.innerHTML='';},3000);
 }
 
 renderStep();
